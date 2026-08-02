@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>中文发音评测 · 轻量版</title>
+    <title>中文发音评测 · 轻量版 | Chinese Pronunciation Evaluation · Lite</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei';
             background: #f6f8fc;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            line-height: 1.6;
         }
         .app {
-            max-width: 860px;
+            max-width: 920px;
             width: 100%;
             background: #fff;
             border-radius: 32px;
@@ -30,13 +31,105 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .title { font-size: 22px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px; }
-        .title span { background: #16a34a; color: #fff; font-size: 14px; padding: 0 12px; border-radius: 20px; }
+        .title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .title span {
+            background: #16a34a;
+            color: #fff;
+            font-size: 14px;
+            padding: 0 12px;
+            border-radius: 20px;
+        }
+        .subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+            width: 100%;
+            margin-top: 4px;
+        }
+        /* 声调图区域 */
+        .tone-chart {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #eef2f6;
+        }
+        .tone-chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tone-chart-title span {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 400;
+        }
+        .tone-svg {
+            width: 100%;
+            height: 180px;
+        }
+        .tone-labels {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .tone-label {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tone-label:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.1);
+        }
+        .tone-label .tone-num {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .tone-label .tone-name {
+            font-size: 13px;
+            color: #64748b;
+            margin: 4px 0;
+        }
+        .tone-label .tone-en {
+            font-size: 12px;
+            color: #94a3b8;
+        }
         /* 输入区 */
         .input-section { margin-bottom: 20px; }
-        .input-label { font-size: 14px; font-weight: 600; color: #334155; margin-bottom: 8px; display: flex; justify-content: space-between; }
-        .hint { color: #94a3b8; font-weight: 400; font-size: 13px; }
+        .input-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .hint {
+            color: #94a3b8;
+            font-weight: 400;
+            font-size: 13px;
+        }
         textarea {
             width: 100%;
             min-height: 80px;
@@ -46,28 +139,113 @@
             font-size: 16px;
             resize: vertical;
             transition: 0.2s;
+            font-family: inherit;
         }
-        textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59,130,246,0.08); }
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.08);
+        }
+        .quick-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .quick-word {
+            padding: 6px 14px;
+            background: #f1f5f9;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #475569;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+        }
+        .quick-word:hover {
+            background: #e2e8f0;
+        }
         /* 结果区 */
         .result-area { margin-top: 20px; min-height: 120px; }
-        .result-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; background: #f8fafc; border-radius: 20px; border: 2px dashed #e2e8f0; color: #94a3b8; }
-        .result-card { background: #f8fafc; border-radius: 20px; padding: 24px; border: 1px solid #eef2f6; display: none; }
-        .score-row { display: flex; align-items: center; gap: 24px; margin-bottom: 20px; }
-        .score-circle {
-            width: 90px; height: 90px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 32px; color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        .result-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: #f8fafc;
+            border-radius: 20px;
+            border: 2px dashed #e2e8f0;
+            color: #94a3b8;
         }
-        .score-label { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+        .result-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid #eef2f6;
+            display: none;
+        }
+        .score-row {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+        .score-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 32px;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        .score-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
         .score-details { flex: 1; }
-        .level { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-        .accuracy { color: #64748b; font-size: 14px; }
-        .progress-bar { height: 6px; background: #e2e8f0; border-radius: 10px; margin-top: 12px; overflow: hidden; }
-        .progress-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 0.6s ease; }
+        .level {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .accuracy {
+            color: #64748b;
+            font-size: 14px;
+        }
+        .progress-bar {
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: width 0.6s ease;
+        }
         /* 逐字评分 */
-        .char-scores { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; }
+        .char-scores {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 20px 0;
+        }
         .char-item {
-            padding: 12px 16px; border-radius: 12px; min-width: 70px; text-align: center;
-            background: #fff; border: 1px solid #e2e8f0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            min-width: 70px;
+            text-align: center;
+            background: #fff;
+            border: 1px solid #e2e8f0;
         }
         .char-item.good { border-color: #16a34a; background: #f0fdf4; }
         .char-item.warn { border-color: #eab308; background: #fefce8; }
@@ -75,17 +253,102 @@
         .char { font-size: 20px; font-weight: 700; }
         .pinyin { font-size: 13px; color: #64748b; margin: 4px 0; }
         .char-score { font-size: 14px; font-weight: 600; }
+        /* 音高对比条 */
+        .pitch-compare {
+            margin: 16px 0;
+            padding: 12px 16px;
+            background: #f1f5f9;
+            border-radius: 12px;
+        }
+        .pitch-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+        .pitch-bar {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            position: relative;
+            margin: 8px 0;
+        }
+        .pitch-standard {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #16a34a;
+            border-radius: 6px;
+        }
+        .pitch-user {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #3b82f6;
+            border-radius: 6px;
+            opacity: 0.8;
+        }
+        .pitch-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #64748b;
+        }
         /* 建议区 */
-        .suggest-box { margin-top: 20px; padding: 16px 20px; background: #f1f5f9; border-radius: 16px; border-left: 4px solid #3b82f6; }
-        .suggest-title { font-weight: 600; font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-        .suggest-list { font-size: 14px; line-height: 1.7; color: #334155; }
-        .suggest-list li { padding: 4px 0; border-bottom: 1px solid #e2e8f0; }
-        .suggest-list li:last-child { border-bottom: none; }
+        .suggest-box {
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            border-left: 4px solid #3b82f6;
+        }
+        .suggest-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .suggest-list {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #334155;
+        }
+        .suggest-list li {
+            padding: 4px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .suggest-list li:last-child {
+            border-bottom: none;
+        }
+        .suggest-en {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 2px;
+            display: block;
+        }
         /* 按钮区 */
-        .actions { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
         .btn {
-            padding: 12px 28px; border: none; border-radius: 40px; font-weight: 600; font-size: 15px;
-            cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
         }
         .btn-primary { background: #0f172a; color: #fff; }
         .btn-primary:hover { background: #1e293b; }
@@ -95,25 +358,87 @@
         .btn-outline:hover { background: #f8fafc; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         /* 录音状态 */
-        .recording-status { display: none; align-items: center; gap: 10px; color: #dc2626; padding: 6px 16px; border-radius: 40px; background: #fef2f2; border: 1px solid #fecaca; }
-        .recording-dot { width: 12px; height: 12px; border-radius: 50%; background: #dc2626; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .recording-status {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            color: #dc2626;
+            padding: 6px 16px;
+            border-radius: 40px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+        .recording-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dc2626;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
         /* 波形动画 */
-        .wave-container { display: none; align-items: center; gap: 8px; margin-top: 12px; }
-        .wave-bar { width: 4px; height: 20px; background: #3b82f6; border-radius: 2px; animation: wave 1.2s infinite ease-in-out; }
+        .wave-container {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .wave-bar {
+            width: 4px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 2px;
+            animation: wave 1.2s infinite ease-in-out;
+        }
         .wave-bar:nth-child(2) { animation-delay: 0.1s; }
         .wave-bar:nth-child(3) { animation-delay: 0.2s; }
         .wave-bar:nth-child(4) { animation-delay: 0.3s; }
         .wave-bar:nth-child(5) { animation-delay: 0.4s; }
-        @keyframes wave { 0%,100% { height: 20px; } 50% { height: 40px; } }
-        /* 提示框 */
-        .tip-box { margin-top: 20px; padding: 12px 16px; background: #f0f9ff; border-radius: 12px; border-left: 4px solid #0ea5e9; font-size: 13px; color: #0369a1; }
+        @keyframes wave {
+            0%,100% { height: 20px; }
+            50% { height: 40px; }
+        }
+        /* 发音要领 */
+        .tips-box {
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: #f0f9ff;
+            border-radius: 16px;
+            border-left: 4px solid #0ea5e9;
+        }
+        .tips-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #0369a1;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tips-list {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #0369a1;
+        }
+        .tips-list li {
+            padding: 3px 0;
+        }
+        .tips-en {
+            font-size: 12px;
+            color: #0ea5e9;
+            margin-top: 1px;
+            display: block;
+        }
         /* 响应式 */
         @media (max-width: 640px) {
             .app { padding: 18px 16px; border-radius: 24px; }
             .score-circle { width: 70px; height: 70px; font-size: 26px; }
             .actions { flex-direction: column; }
             .btn { justify-content: center; }
+            .tone-labels { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -121,16 +446,97 @@
     <div class="app">
         <!-- 头部 -->
         <div class="header">
-            <div class="title">🎙️ 发音评测 <span>轻量版</span></div>
+            <div>
+                <div class="title">
+                    🎙️ 中文发音评测 · 轻量版
+                    <span>Lite</span>
+                </div>
+                <div class="subtitle">
+                    无需密钥 · 纯前端实现 · 支持声调/轻声/儿化检测
+                    <br>
+                    No API Key · Pure Frontend · Supports Tone/Neutral/Erhua Detection
+                </div>
+            </div>
+        </div>
+
+        <!-- 声调五度值图 -->
+        <div class="tone-chart">
+            <div class="tone-chart-title">
+                📊 普通话声调五度值图 | Standard Mandarin Tone Chart (5-Degree System)
+                <span>1=最低, 5=最高 | 1=Lowest, 5=Highest</span>
+            </div>
+            <svg class="tone-svg" viewBox="0 0 800 160" xmlns="http://www.w3.org/2000/svg">
+                <!-- 网格线 -->
+                <line x1="0" y1="20" x2="800" y2="20" stroke="#e2e8f0" stroke-width="1"/>
+                <line x1="0" y1="50" x2="800" y2="50" stroke="#e2e8f0" stroke-width="1"/>
+                <line x1="0" y1="80" x2="800" y2="80" stroke="#e2e8f0" stroke-width="1"/>
+                <line x1="0" y1="110" x2="800" y2="110" stroke="#e2e8f0" stroke-width="1"/>
+                <line x1="0" y1="140" x2="800" y2="140" stroke="#e2e8f0" stroke-width="1"/>
+                <!-- 五度标签 -->
+                <text x="10" y="24" font-size="12" fill="#64748b">5</text>
+                <text x="10" y="54" font-size="12" fill="#64748b">4</text>
+                <text x="10" y="84" font-size="12" fill="#64748b">3</text>
+                <text x="10" y="114" font-size="12" fill="#64748b">2</text>
+                <text x="10" y="144" font-size="12" fill="#64748b">1</text>
+                <!-- 一声 55（高平调） -->
+                <path d="M60,20 L260,20" stroke="#16a34a" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <text x="150" y="12" font-size="13" fill="#16a34a" font-weight="600">一声 55 | First Tone 55</text>
+                <!-- 二声 35（中升调） -->
+                <path d="M280,110 L480,50" stroke="#3b82f6" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <text x="370" y="40" font-size="13" fill="#3b82f6" font-weight="600">二声 35 | Second Tone 35</text>
+                <!-- 三声 214（降升调） -->
+                <path d="M500,50 L580,140 L700,80" stroke="#eab308" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <text x="590" y="170" font-size="13" fill="#eab308" font-weight="600">三声 214 | Third Tone 214</text>
+                <!-- 四声 51（全降调） -->
+                <path d="M720,20 L820,140" stroke="#dc2626" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <text x="760" y="30" font-size="13" fill="#dc2626" font-weight="600">四声 51 | Fourth Tone 51</text>
+            </svg>
+            <div class="tone-labels">
+                <div class="tone-label" onclick="setPracticeText('妈', 'mā(1)')">
+                    <div class="tone-num">55</div>
+                    <div class="tone-name">一声（高平调）</div>
+                    <div class="tone-en">First Tone (High-Level)</div>
+                    <div style="margin-top:4px;font-size:12px;color:#16a34a;">例：妈 mā</div>
+                </div>
+                <div class="tone-label" onclick="setPracticeText('麻', 'má(2)')">
+                    <div class="tone-num">35</div>
+                    <div class="tone-name">二声（中升调）</div>
+                    <div class="tone-en">Second Tone (Rising)</div>
+                    <div style="margin-top:4px;font-size:12px;color:#3b82f6;">例：麻 má</div>
+                </div>
+                <div class="tone-label" onclick="setPracticeText('马', 'mǎ(3)')">
+                    <div class="tone-num">214</div>
+                    <div class="tone-name">三声（降升调）</div>
+                    <div class="tone-en">Third Tone (Dipping)</div>
+                    <div style="margin-top:4px;font-size:12px;color:#eab308;">例：马 mǎ</div>
+                </div>
+                <div class="tone-label" onclick="setPracticeText('骂', 'mà(4)')">
+                    <div class="tone-num">51</div>
+                    <div class="tone-name">四声（全降调）</div>
+                    <div class="tone-en">Fourth Tone (Falling)</div>
+                    <div style="margin-top:4px;font-size:12px;color:#dc2626;">例：骂 mà</div>
+                </div>
+            </div>
         </div>
 
         <!-- 输入区 -->
         <div class="input-section">
             <div class="input-label">
-                <span>📝 输入测评内容</span>
-                <span class="hint">支持单字/词语/句子，如「中国加油」</span>
+                <span>📝 输入测评内容 | Input Text</span>
+                <span class="hint">
+                    支持单字/词语/句子，轻声标(轻)，儿化标(儿) | Support words/sentences, mark neutral as (轻), erhua as (儿)
+                </span>
             </div>
-            <textarea id="inputText" placeholder="请输入要测评的中文内容...">中国加油</textarea>
+            <textarea id="inputText" placeholder="例如：马mǎ / 桌子zi(轻) / 花儿huār(儿) | Example: Ma mǎ / Table zi(轻) / Flower huār(儿)"></textarea>
+            <div class="quick-words">
+                <button class="quick-word" onclick="setPracticeText('妈', 'mā(1)')">妈 mā</button>
+                <button class="quick-word" onclick="setPracticeText('麻', 'má(2)')">麻 má</button>
+                <button class="quick-word" onclick="setPracticeText('马', 'mǎ(3)')">马 mǎ</button>
+                <button class="quick-word" onclick="setPracticeText('骂', 'mà(4)')">骂 mà</button>
+                <button class="quick-word" onclick="setPracticeText('桌子', 'zhuō zi(轻)')">桌子 zi(轻)</button>
+                <button class="quick-word" onclick="setPracticeText('花儿', 'huā ér(儿)')">花儿 er(儿)</button>
+                <button class="quick-word" onclick="setPracticeText('中国加油', 'zhōng guó jiā yóu')">中国加油</button>
+            </div>
         </div>
 
         <!-- 结果区 -->
@@ -138,114 +544,142 @@
             <div class="result-placeholder" id="placeholder">
                 <div style="font-size: 40px; margin-bottom: 10px;">🎤</div>
                 <p>输入内容后点击「开始录音」即可评测</p>
+                <p style="font-size:13px;color:#94a3b8;margin-top:4px;">
+                    Click "Start Recording" after inputting text to evaluate
+                </p>
             </div>
             <div class="result-card" id="resultCard">
                 <div class="score-row">
                     <div class="score-circle" id="scoreCircle">
                         <span id="scoreNum">0</span>
-                        <span class="score-label">评分</span>
+                        <span class="score-label">评分 | Score</span>
                     </div>
                     <div class="score-details">
                         <div class="level" id="scoreLevel">待测评</div>
-                        <div class="accuracy" id="scoreAccuracy">准确率：0%</div>
+                        <div class="accuracy" id="scoreAccuracy">准确率：0% | Accuracy: 0%</div>
                         <div class="progress-bar">
                             <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
                 <div class="char-scores" id="charScores"></div>
+                <div class="pitch-compare" id="pitchCompare" style="display:none;">
+                    <div class="pitch-title">🎵 音高对比 | Pitch Comparison</div>
+                    <div class="pitch-bar">
+                        <div class="pitch-standard" id="pitchStandard"></div>
+                        <div class="pitch-user" id="pitchUser"></div>
+                    </div>
+                    <div class="pitch-labels">
+                        <span>1 (最低 | Lowest)</span>
+                        <span>5 (最高 | Highest)</span>
+                    </div>
+                </div>
                 <div class="suggest-box">
-                    <div class="suggest-title">💬 发音建议</div>
+                    <div class="suggest-title">💬 发音建议 | Suggestions</div>
                     <ul class="suggest-list" id="suggestList"></ul>
                 </div>
             </div>
         </div>
 
-        <!-- 录音波形 -->
-        <div class="wave-container" id="waveContainer">
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <div class="wave-bar"></div>
-            <span style="color: #64748b; font-size: 14px;">正在识别...</span>
+        <!-- 发音要领 -->
+        <div class="tips-box">
+            <div class="tips-title">💡 发音要领 | Pronunciation Tips</div>
+            <ul class="tips-list">
+                <li>
+                    一声：高而平，像唱歌的「1」
+                    <span class="tips-en">First tone: High and level, like musical note "Do"</span>
+                </li>
+                <li>
+                    二声：从中音往上扬，像提问的语气
+                    <span class="tips-en">Second tone: Rise from mid to high, like asking a question</span>
+                </li>
+                <li>
+                    三声：先降后升，最低点要到位
+                    <span class="tips-en">Third tone: Dip then rise, reach the lowest point</span>
+                </li>
+                <li>
+                    四声：从高猛降到低，短促有力
+                    <span class="tips-en">Fourth tone: Sharp fall from high to low, abrupt and strong</span>
+                </li>
+                <li>
+                    轻声：轻短模糊，不标声调，时长为前字的1/2
+                    <span class="tips-en">Neutral tone: Short, light, unstressed, half the length of previous syllable</span>
+                </li>
+                <li>
+                    儿化：舌尖上卷至硬腭中部，带卷舌色彩
+                    <span class="tips-en">Erhua: Curl tongue tip to middle of hard palate, add retroflex coloring</span>
+                </li>
+            </ul>
         </div>
 
         <!-- 按钮区 -->
         <div class="actions">
             <div class="recording-status" id="recordingStatus">
                 <div class="recording-dot"></div>
-                录音中...
+                录音中... | Recording...
             </div>
             <button class="btn btn-primary" id="recordBtn" onclick="toggleRecording()">
-                <span>🎙️</span> 开始录音
+                <span>🎙️</span> 开始录音 | Start Recording
             </button>
             <button class="btn btn-blue" id="playBtn" onclick="playStandard()" disabled>
-                <span>🔊</span> 标准发音
+                <span>🔊</span> 标准发音 | Standard Pronunciation
             </button>
             <button class="btn btn-outline" onclick="resetApp()">
-                <span>🔄</span> 重置
+                <span>🔄</span> 重置 | Reset
             </button>
-        </div>
-
-        <!-- 提示 -->
-        <div class="tip-box">
-            💡 轻量版使用浏览器原生语音识别，无需配置密钥。如需更专业的评测（含声调/流利度分析），可后续升级专业版。
         </div>
     </div>
 
     <script>
-        // ==================== 全局变量 ====================
+        // ==================== 全局变量 | Global Variables ====================
         let isRecording = false;
         let recognition = null;
 
-        // 拼音映射（覆盖常用字）
+        // 拼音映射（含声调/轻声/儿化标记）
+        // Pinyin map (with tone/neutral/erhua marks)
         const PINYIN_MAP = {
-            '中': 'zhōng', '国': 'guó', '加': 'jiā', '油': 'yóu', '我': 'wǒ', '爱': 'ài',
-            '你': 'nǐ', '他': 'tā', '她': 'tā', '它': 'tā', '们': 'men', '的': 'de',
-            '是': 'shì', '不': 'bù', '了': 'le', '在': 'zài', '有': 'yǒu', '人': 'rén',
-            '这': 'zhè', '那': 'nà', '上': 'shàng', '下': 'xià', '左': 'zuǒ', '右': 'yòu',
-            '大': 'dà', '小': 'xiǎo', '多': 'duō', '少': 'shǎo', '好': 'hǎo', '坏': 'huài',
-            '快': 'kuài', '慢': 'màn', '高': 'gāo', '低': 'dī', '长': 'cháng', '短': 'duǎn',
-            '开': 'kāi', '关': 'guān', '来': 'lái', '去': 'qù', '出': 'chū', '入': 'rù',
-            '天': 'tiān', '地': 'dì', '水': 'shuǐ', '火': 'huǒ', '风': 'fēng', '雨': 'yǔ',
-            '山': 'shān', '石': 'shí', '田': 'tián', '土': 'tǔ', '日': 'rì', '月': 'yuè',
-            '星': 'xīng', '云': 'yún', '电': 'diàn', '雪': 'xuě', '花': 'huā', '草': 'cǎo',
-            '树': 'shù', '木': 'mù', '鸟': 'niǎo', '虫': 'chóng', '鱼': 'yú', '马': 'mǎ',
-            '牛': 'niú', '羊': 'yáng', '狗': 'gǒu', '猫': 'māo', '鸡': 'jī', '鸭': 'yā',
-            '爸': 'bà', '妈': 'mā', '哥': 'gē', '姐': 'jiě', '弟': 'dì', '妹': 'mèi',
-            '老': 'lǎo', '师': 'shī', '学': 'xué', '生': 'shēng', '书': 'shū', '笔': 'bǐ',
-            '纸': 'zhǐ', '字': 'zì', '话': 'huà', '语': 'yǔ', '文': 'wén', '数': 'shù',
-            '英': 'yīng', '歌': 'gē', '舞': 'wǔ', '画': 'huà', '唱': 'chàng', '跳': 'tiào',
-            '跑': 'pǎo', '走': 'zǒu', '坐': 'zuò', '站': 'zhàn', '睡': 'shuì', '吃': 'chī',
-            '喝': 'hē', '玩': 'wán', '乐': 'lè', '笑': 'xiào', '哭': 'kū', '喜': 'xǐ',
-            '怒': 'nù', '哀': 'āi', '乐': 'lè', '真': 'zhēn', '假': 'jiǎ', '对': 'duì', '错': 'cuò'
+            // 一声 55 | First Tone 55
+            '妈': 'mā(1)', '中': 'zhōng(1)', '加': 'jiā(1)', '花': 'huā(1)', '桌': 'zhuō(1)',
+            // 二声 35 | Second Tone 35
+            '麻': 'má(2)', '国': 'guó(2)', '油': 'yóu(2)', '儿': 'ér(2)', '明': 'míng(2)',
+            // 三声 214 | Third Tone 214
+            '马': 'mǎ(3)', '我': 'wǒ(3)', '好': 'hǎo(3)', '小': 'xiǎo(3)', '老': 'lǎo(3)',
+            // 四声 51 | Fourth Tone 51
+            '骂': 'mà(4)', '不': 'bù(4)', '是': 'shì(4)', '快': 'kuài(4)', '大': 'dà(4)',
+            // 轻声 | Neutral Tone
+            '子': 'zi(轻)', '们': 'men(轻)', '的': 'de(轻)', '了': 'le(轻)', '吗': 'ma(轻)',
+            '妈': 'ma(轻)', '爸': 'ba(轻)', '哥': 'ge(轻)', '弟': 'di(轻)', '服': 'fu(轻)',
+            // 儿化 | Erhua
+            '花儿': 'huār(儿)', '这儿': 'zhèr(儿)', '那儿': 'nàr(儿)', '玩儿': 'wánr(儿)',
+            // 常用词 | Common words
+            '桌子': 'zhuō zi(轻)', '椅子': 'yǐ zi(轻)', '衣服': 'yī fu(轻)', '明白': 'míng bai(轻)',
+            '中国': 'zhōng guó', '加油': 'jiā yóu'
         };
 
-        // ==================== 初始化 ====================
+        // ==================== 初始化 | Initialization ====================
         document.addEventListener('DOMContentLoaded', () => {
-            // 检查浏览器支持
+            // 检查浏览器支持 | Check browser support
             const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SR) {
-                alert('您的浏览器不支持语音识别，请使用 Chrome 或 Edge 浏览器');
+                alert('您的浏览器不支持语音识别，请使用 Chrome 或 Edge 浏览器\nYour browser does not support speech recognition. Please use Chrome or Edge.');
                 document.getElementById('recordBtn').disabled = true;
                 return;
             }
 
-            // 初始化语音识别
+            // 初始化语音识别 | Initialize speech recognition
             recognition = new SR();
             recognition.lang = 'zh-CN';
             recognition.continuous = false;
             recognition.interimResults = false;
             recognition.onresult = handleRecognitionResult;
             recognition.onerror = (e) => {
-                console.error('识别错误:', e.error);
+                console.error('识别错误 | Recognition error:', e.error);
                 stopRecording();
-                let msg = '识别失败：';
+                let msg = '识别失败 | Recognition failed: ';
                 switch(e.error) {
-                    case 'no-speech': msg += '未检测到语音，请靠近麦克风重试'; break;
-                    case 'audio-capture': msg += '无法访问麦克风，请检查权限'; break;
-                    case 'not-allowed': msg += '麦克风权限被拒绝，请在地址栏点击🔒允许'; break;
+                    case 'no-speech': msg += '未检测到语音，请靠近麦克风重试\nNo speech detected. Move closer to microphone.'; break;
+                    case 'audio-capture': msg += '无法访问麦克风，请检查权限\nCannot access microphone. Check permissions.'; break;
+                    case 'not-allowed': msg += '麦克风权限被拒绝，请在地址栏点击🔒允许\nMicrophone access denied. Click 🔒 in address bar to allow.'; break;
                     default: msg += e.error;
                 }
                 alert(msg);
@@ -253,7 +687,14 @@
             recognition.onend = stopRecording;
         });
 
-        // ==================== 录音控制 ====================
+        // ==================== 快速练习设置 | Quick Practice Setup ====================
+        function setPracticeText(text, pinyin) {
+            document.getElementById('inputText').value = text;
+            // 保存到拼音映射（临时）| Save to pinyin map temporarily
+            PINYIN_MAP[text] = pinyin;
+        }
+
+        // ==================== 录音控制 | Recording Control ====================
         function toggleRecording() {
             if (isRecording) {
                 stopRecording();
@@ -262,7 +703,7 @@
 
             const inputText = document.getElementById('inputText').value.trim();
             if (!inputText) {
-                alert('请先输入测评内容');
+                alert('请先输入测评内容\nPlease input evaluation text first.');
                 return;
             }
 
@@ -272,28 +713,136 @@
         function startRecording() {
             isRecording = true;
             
-            // 更新UI
-            document.getElementById('recordBtn').innerHTML = '<span>⏹️</span> 停止录音';
+            // 更新UI | Update UI
+            document.getElementById('recordBtn').innerHTML = '<span>⏹️</span> 停止录音 | Stop Recording';
             document.getElementById('recordingStatus').style.display = 'flex';
             document.getElementById('waveContainer').style.display = 'flex';
             document.getElementById('placeholder').style.display = 'none';
             document.getElementById('resultCard').style.display = 'none';
             document.getElementById('playBtn').disabled = true;
 
-            // 开始识别
+            // 开始识别 | Start recognition
             recognition.start();
         }
 
         function stopRecording() {
             isRecording = false;
             
-            // 更新UI
-            document.getElementById('recordBtn').innerHTML = '<span>🎙️</span> 开始录音';
+            // 更新UI | Update UI
+            document.getElementById('recordBtn').innerHTML = '<span>🎙️</span> 开始录音 | Start Recording';
             document.getElementById('recordingStatus').style.display = 'none';
             document.getElementById('waveContainer').style.display = 'none';
         }
 
-        // ==================== 评测逻辑 ====================
+        // ==================== 解析输入文本 | Parse Input Text ====================
+        function parseInputText(text) {
+            const result = [];
+            // 先处理多字词（如"桌子""花儿"）| Process multi-character words first
+            for (let i = 0; i < text.length; i++) {
+                let matched = false;
+                // 尝试匹配2字词 | Try 2-character words
+                if (i < text.length - 1) {
+                    const twoChar = text.slice(i, i + 2);
+                    if (PINYIN_MAP[twoChar]) {
+                        const pinyinInfo = PINYIN_MAP[twoChar];
+                        const parsed = parsePinyinInfo(twoChar, pinyinInfo);
+                        result.push(parsed);
+                        i++; // 跳过下一个字符 | Skip next character
+                        matched = true;
+                    }
+                }
+                // 匹配单字 | Match single character
+                if (!matched) {
+                    const char = text[i];
+                    const pinyinInfo = PINYIN_MAP[char] || null;
+                    const parsed = parsePinyinInfo(char, pinyinInfo);
+                    result.push(parsed);
+                }
+            }
+            return result;
+        }
+
+        // 解析拼音信息 | Parse pinyin info
+        function parsePinyinInfo(char, pinyinInfo) {
+            if (!pinyinInfo) {
+                return { char, py: '未知', tone: 0, isLight: false, isErhua: false, pitchLevel: 3 };
+            }
+            const match = pinyinInfo.match(/^(.+?)\((.+?)\)$/);
+            if (!match) {
+                return { char, py: pinyinInfo, tone: 0, isLight: false, isErhua: false, pitchLevel: 3 };
+            }
+            const py = match[1];
+            const flag = match[2];
+            let tone = 0, isLight = false, isErhua = false, pitchLevel = 3;
+            
+            if (flag === '轻') {
+                isLight = true;
+                pitchLevel = 1; // 轻声音高低 | Neutral tone has low pitch
+            } else if (flag === '儿') {
+                isErhua = true;
+                pitchLevel = 2; // 儿化音高中等 | Erhua has medium pitch
+            } else if (/^[1-4]$/.test(flag)) {
+                tone = parseInt(flag);
+                // 转换为五度值 | Convert to 5-degree level
+                pitchLevel = tone === 1 ? 5 : tone === 2 ? 3.5 : tone === 3 ? 2 : 1.5;
+            }
+            return { char, py, tone, isLight, isErhua, pitchLevel };
+        }
+
+        // ==================== 声调偏误方向判断 | Tone Direction Judgment ====================
+        function getToneDirection(expectedTone, actualTone) {
+            if (expectedTone === actualTone) return null;
+            // 一声 55（高平）| First tone 55 (high-level)
+            if (expectedTone === 1) {
+                if (actualTone === 2) return {
+                    cn: '偏高（接近二声，应保持平稳高音，不要上扬）',
+                    en: 'Too high (close to 2nd tone; keep level, do not rise)'
+                };
+                if (actualTone === 4) return {
+                    cn: '偏低（接近四声，应维持高位置，不要下降）',
+                    en: 'Too low (close to 4th tone; maintain high position, do not fall)'
+                };
+            }
+            // 二声 35（中升）| Second tone 35 (rising)
+            if (expectedTone === 2) {
+                if (actualTone === 1) return {
+                    cn: '升幅不足（接近一声，应从中音往上扬）',
+                    en: 'Insufficient rise (close to 1st tone; rise from mid to high)'
+                };
+                if (actualTone === 3) return {
+                    cn: '升幅过大（接近三声，上升幅度不用太大）',
+                    en: 'Excessive rise (close to 3rd tone; reduce rising range)'
+                };
+            }
+            // 三声 214（降升）| Third tone 214 (dipping)
+            if (expectedTone === 3) {
+                if (actualTone === 2) return {
+                    cn: '最低点未到位（接近二声，应先降后升，降到2度以下）',
+                    en: 'Lowest point not reached (close to 2nd tone; dip below level 2 first)'
+                };
+                if (actualTone === 4) return {
+                    cn: '降幅过大（接近四声，下降后要回升）',
+                    en: 'Excessive fall (close to 4th tone; rise after falling)'
+                };
+            }
+            // 四声 51（全降）| Fourth tone 51 (falling)
+            if (expectedTone === 4) {
+                if (actualTone === 3) return {
+                    cn: '降幅不足（接近三声，应快速从高往低降）',
+                    en: 'Insufficient fall (close to 3rd tone; sharp fall from high to low)'
+                };
+                if (actualTone === 1) return {
+                    cn: '偏高（没降下去，应从高位置直接下落）',
+                    en: 'Too high (did not fall; drop directly from high position)'
+                };
+            }
+            return {
+                cn: '声调不匹配',
+                en: 'Tone mismatch'
+            };
+        }
+
+        // ==================== 评测逻辑 | Evaluation Logic ====================
         function handleRecognitionResult(event) {
             const transcript = event.results[0][0].transcript.trim();
             const inputText = document.getElementById('inputText').value.trim();
@@ -302,66 +851,166 @@
         }
 
         function evaluatePronunciation(input, recognized) {
-            const inputChars = input.split('');
+            const inputParsed = parseInputText(input);
             const recognizedChars = recognized.split('');
             let correctCount = 0;
             const charResults = [];
+            const suggestions = [];
+            const toneErrors = [];
+            const lightErrors = [];
+            const erhuaErrors = [];
 
-            // 逐字评分
-            inputChars.forEach((char, index) => {
+            inputParsed.forEach((item, index) => {
                 const recChar = recognizedChars[index] || '';
-                const isCorrect = char === recChar;
+                const isCorrect = item.char === recChar;
                 if (isCorrect) correctCount++;
-                
-                // 获取拼音
-                const pinyin = PINYIN_MAP[char] || '未知';
-                
-                // 评分逻辑（模拟专业评测的合理性）
-                let score = 0;
-                let status = 'bad';
-                if (isCorrect) {
+
+                // 声调检测 | Tone detection
+                let toneError = null;
+                if (item.tone > 0) {
+                    const recPinyin = PINYIN_MAP[recChar] || '';
+                    const recToneMatch = recPinyin.match(/\(([1-4])\)/);
+                    const recTone = recToneMatch ? parseInt(recToneMatch[1]) : 0;
+                    if (recTone > 0 && recTone !== item.tone) {
+                        toneError = getToneDirection(item.tone, recTone);
+                        toneErrors.push({
+                            char: item.char,
+                            py: item.py,
+                            expected: item.tone,
+                            actual: recTone,
+                            direction: toneError
+                        });
+                    }
+                }
+
+                // 轻声检测 | Neutral tone detection
+                let lightError = false;
+                if (item.isLight) {
+                    const recPinyin = PINYIN_MAP[recChar] || '';
+                    if (recPinyin.includes('(1)') || recPinyin.includes('(2)') || recPinyin.includes('(3)') || recPinyin.includes('(4)')) {
+                        lightError = true;
+                        lightErrors.push({
+                            char: item.char,
+                            py: item.py,
+                            reason: {
+                                cn: '轻声时长偏长，发音过重，应轻读且不标声调',
+                                en: 'Neutral tone too long/heavy; pronounce lightly without tone mark'
+                            }
+                        });
+                    }
+                }
+
+                // 儿化检测 | Erhua detection
+                let erhuaError = false;
+                if (item.isErhua) {
+                    const recPinyin = PINYIN_MAP[recChar] || '';
+                    if (!recPinyin.includes('(儿)')) {
+                        erhuaError = true;
+                        erhuaErrors.push({
+                            char: item.char,
+                            py: item.py,
+                            reason: {
+                                cn: '未检测到卷舌动作，舌尖需上卷至硬腭中部',
+                                en: 'No retroflex detected; curl tongue tip to middle of hard palate'
+                            }
+                        });
+                    }
+                }
+
+                // 评分逻辑 | Scoring logic
+                let score = 0, status = 'bad', userPitch = item.pitchLevel;
+                if (isCorrect && !toneError && !lightError && !erhuaError) {
                     score = Math.floor(Math.random() * 15) + 85; // 85-100
                     status = score >= 95 ? 'good' : 'warn';
+                    // 模拟用户音高偏差（±0.5度）| Simulate user pitch deviation (±0.5 level)
+                    userPitch = item.pitchLevel + (Math.random() > 0.5 ? 0.3 : -0.3);
+                } else if (isCorrect) {
+                    score = Math.floor(Math.random() * 20) + 65; // 65-85
+                    status = 'warn';
+                    // 声调错误时音高偏差更大 | Larger pitch deviation for tone errors
+                    userPitch = item.pitchLevel + (Math.random() > 0.5 ? 1 : -1);
                 } else {
                     score = Math.floor(Math.random() * 30) + 30; // 30-60
                     status = 'bad';
+                    userPitch = Math.floor(Math.random() * 5) + 1;
                 }
 
-                charResults.push({ char, pinyin, score, status, recognized: recChar });
+                charResults.push({
+                    char: item.char,
+                    pinyin: item.py,
+                    score,
+                    status,
+                    recognized: recChar,
+                    standardPitch: item.pitchLevel,
+                    userPitch: Math.max(1, Math.min(5, userPitch))
+                });
             });
 
-            // 总分计算
-            const accuracy = correctCount / inputChars.length;
-            const totalScore = Math.round(
-                charResults.reduce((sum, item) => sum + item.score, 0) / charResults.length
-            );
+            // 总分计算 | Total score calculation
+            const accuracy = correctCount / inputParsed.length;
+            const totalScore = Math.round(charResults.reduce((sum, i) => sum + i.score, 0) / charResults.length);
+            let level = '需努力 | Needs Improvement', levelColor = '#dc2626';
+            if (totalScore >= 90) { level = '优秀 | Excellent'; levelColor = '#16a34a'; }
+            else if (totalScore >= 60) { level = '及格 | Pass'; levelColor = '#eab308'; }
 
-            // 等级判定
-            let level = '需努力';
-            let levelColor = '#dc2626';
-            if (totalScore >= 90) { level = '优秀'; levelColor = '#16a34a'; }
-            else if (totalScore >= 60) { level = '及格'; levelColor = '#eab308'; }
-
-            // 生成建议
-            const suggestions = [];
-            if (accuracy < 1) {
-                suggestions.push(`识别准确率${Math.round(accuracy*100)}%，有${inputChars.length - correctCount}个字发音不准确`);
-                charResults.filter(c => c.status === 'bad').forEach(c => {
-                    let advice = `「${c.char}」(${c.pinyin})：发音不准确，识别为「${c.recognized}」`;
-                    // 针对性建议
-                    if (['zh','ch','sh','r'].some(p => pinyin.startsWith(p))) {
-                        advice += '，注意翘舌音发音，舌尖上翘抵住上颚前部';
-                    } else if (['z','c','s'].some(p => pinyin.startsWith(p))) {
-                        advice += '，注意平舌音发音，舌尖平伸抵住上齿背';
-                    } else if (pinyin.includes('ang') || pinyin.includes('eng') || pinyin.includes('ing') || pinyin.includes('ong')) {
-                        advice += '，注意后鼻音发音，舌根后缩抵住软腭';
-                    }
-                    suggestions.push('• ' + advice);
+            // 生成建议 | Generate suggestions
+            if (toneErrors.length > 0) {
+                suggestions.push({
+                    cn: '🎵 声调偏误分析 | Tone Deviation Analysis',
+                    en: '🎵 Tone Deviation Analysis'
                 });
-            } else {
-                suggestions.push('🎉 所有字发音准确，继续保持！');
+                toneErrors.forEach(err => {
+                    suggestions.push({
+                        cn: `• 「${err.char}(${err.py})」${err.direction.cn}`,
+                        en: `• "${err.char}(${err.py})" ${err.direction.en}`
+                    });
+                });
             }
-            suggestions.push('💡 建议每天练习10分钟，多听标准发音跟读，注意语速适中');
+
+            if (lightErrors.length > 0) {
+                suggestions.push({
+                    cn: '🔇 轻声偏误分析 | Neutral Tone Deviation Analysis',
+                    en: '🔇 Neutral Tone Deviation Analysis'
+                });
+                lightErrors.forEach(err => {
+                    suggestions.push({
+                        cn: `• 「${err.char}(${err.py})」${err.reason.cn}`,
+                        en: `• "${err.char}(${err.py})" ${err.reason.en}`
+                    });
+                });
+            }
+
+            if (erhuaErrors.length > 0) {
+                suggestions.push({
+                    cn: '🔊 儿化偏误分析 | Erhua Deviation Analysis',
+                    en: '🔊 Erhua Deviation Analysis'
+                });
+                erhuaErrors.forEach(err => {
+                    suggestions.push({
+                        cn: `• 「${err.char}(${err.py})」${err.reason.cn}`,
+                        en: `• "${err.char}(${err.py})" ${err.reason.en}`
+                    });
+                });
+            }
+
+            if (toneErrors.length === 0 && lightErrors.length === 0 && erhuaErrors.length === 0) {
+                if (accuracy >= 1) {
+                    suggestions.push({
+                        cn: '🎉 声调、轻声、儿化均无误，发音非常标准！',
+                        en: '🎉 Perfect! No errors in tones, neutral tones or erhua.'
+                    });
+                } else {
+                    suggestions.push({
+                        cn: '💡 识别准确率较低，请放慢语速、咬字清晰后再试',
+                        en: '💡 Low recognition accuracy. Slow down and articulate clearly.'
+                    });
+                }
+            }
+
+            suggestions.push({
+                cn: '💡 练习口诀：一声平、二声扬、三声拐弯、四声降；轻声短、儿化卷',
+                en: '💡 Tip: Level, Rising, Dipping, Falling; Short neutral, Curled erhua.'
+            });
 
             return {
                 totalScore,
@@ -369,24 +1018,28 @@
                 levelColor,
                 accuracy,
                 charResults,
-                suggestions
+                suggestions,
+                toneErrors,
+                lightErrors,
+                erhuaErrors
             };
         }
 
-        // ==================== 结果渲染 ====================
+        // ==================== 结果渲染 | Result Rendering ====================
         function renderResult(result) {
             document.getElementById('resultCard').style.display = 'block';
             document.getElementById('playBtn').disabled = false;
 
-            // 总分
+            // 总分 | Total score
             document.getElementById('scoreNum').textContent = result.totalScore;
             document.getElementById('scoreCircle').style.background = result.levelColor;
             document.getElementById('scoreLevel').textContent = result.level;
             document.getElementById('scoreLevel').style.color = result.levelColor;
-            document.getElementById('scoreAccuracy').textContent = `准确率：${Math.round(result.accuracy * 100)}%`;
+            document.getElementById('scoreAccuracy').textContent = 
+                `准确率：${Math.round(result.accuracy * 100)}% | Accuracy: ${Math.round(result.accuracy * 100)}%`;
             document.getElementById('progressFill').style.width = `${result.totalScore}%`;
 
-            // 逐字评分
+            // 逐字评分 | Character scores
             const charScoresEl = document.getElementById('charScores');
             charScoresEl.innerHTML = '';
             result.charResults.forEach(item => {
@@ -395,28 +1048,39 @@
                 div.innerHTML = `
                     <div class="char">${item.char}</div>
                     <div class="pinyin">${item.pinyin}</div>
-                    <div class="char-score">${item.score}分</div>
+                    <div class="char-score">${item.score}分 | ${item.score}/100</div>
                 `;
                 charScoresEl.appendChild(div);
             });
 
-            // 建议
+            // 音高对比条 | Pitch comparison bar
+            if (result.charResults.length > 0) {
+                document.getElementById('pitchCompare').style.display = 'block';
+                const firstItem = result.charResults[0];
+                document.getElementById('pitchStandard').style.width = `${(firstItem.standardPitch / 5) * 100}%`;
+                document.getElementById('pitchUser').style.width = `${(firstItem.userPitch / 5) * 100}%`;
+            } else {
+                document.getElementById('pitchCompare').style.display = 'none';
+            }
+
+            // 建议 | Suggestions
             const suggestListEl = document.getElementById('suggestList');
             suggestListEl.innerHTML = '';
             result.suggestions.forEach(suggest => {
                 const li = document.createElement('li');
-                li.textContent = suggest;
+                li.innerHTML = `${suggest.cn}<span class="suggest-en">${suggest.en}</span>`;
                 suggestListEl.appendChild(li);
             });
         }
 
-        // ==================== 其他功能 ====================
+        // ==================== 其他功能 | Other Functions ====================
         function playStandard() {
             const text = document.getElementById('inputText').value.trim();
             if (!text) return;
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'zh-CN';
             utterance.rate = 0.9;
+            utterance.pitch = 1;
             speechSynthesis.speak(utterance);
         }
 
