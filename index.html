@@ -1,623 +1,1019 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>发音评测 | Pronunciation Test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>发音评测</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#f6f8fc;min-height:100vh;padding:20px;color:#0f172a}
-.app{max-width:860px;margin:0 auto;background:#fff;border-radius:28px;box-shadow:0 20px 60px rgba(0,0,0,.06);padding:28px 32px 36px}
-.title{font-size:22px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.title span{background:#3b82f6;color:#fff;font-size:12px;padding:2px 10px;border-radius:16px}
-.subtitle{font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.5}
-.tabs{display:flex;gap:8px;margin-bottom:20px}
-.tab{padding:8px 20px;border-radius:24px;border:2px solid #e2e8f0;background:transparent;font-size:14px;font-weight:600;color:#475569;cursor:pointer;font-family:inherit}
-.tab.active{background:#0f172a;color:#fff;border-color:#0f172a}
-.input-hint{font-size:12px;color:#94a3b8;margin:8px 0 16px;line-height:1.6}
-textarea{width:100%;min-height:64px;padding:14px 16px;border:2px solid #e2e8f0;border-radius:14px;font-size:16px;resize:vertical;font-family:inherit;transition:.2s}
-textarea:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 4px rgba(59,130,246,.08)}
-.viz{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
-.viz-panel{background:#f8fafc;border-radius:14px;padding:12px;border:1px solid #eef2f6}
-.viz-title{font-size:12px;font-weight:600;color:#475569;margin-bottom:8px}
-canvas{width:100%;height:80px;background:#fff;border-radius:8px;display:block}
-.score-card{background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:20px;padding:20px 24px;color:#fff;margin-bottom:20px;display:none}
-.score-row{display:flex;justify-content:space-between;align-items:center}
-.score-num{font-size:44px;font-weight:700}
-.score-level{font-size:16px;font-weight:600;opacity:.9}
-.score-acc{font-size:13px;opacity:.85;margin-top:4px}
-.cards{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
-.char-card{padding:10px 14px;border-radius:12px;min-width:72px;text-align:center;background:#fff;border:1px solid #e2e8f0}
-.char-card.good{border-color:#16a34a;background:#f0fdf4}
-.char-card.warn{border-color:#eab308;background:#fefce8}
-.char-card.bad{border-color:#dc2626;background:#fef2f2}
-.char-han{font-size:20px;font-weight:700}
-.char-py{font-size:11px;color:#64748b;margin:2px 0}
-.char-tag{font-size:11px;font-weight:600}
-.tag-good{color:#16a34a}.tag-warn{color:#eab308}.tag-bad{color:#dc2626}
-.advice{background:#f0f9ff;border-radius:16px;padding:16px 20px;border-left:4px solid #0ea5e9;display:none}
-.advice-title{font-size:14px;font-weight:600;color:#0369a1;margin-bottom:8px}
-.advice-list{font-size:13px;line-height:1.7;color:#0369a1;list-style:none}
-.advice-list li{padding:3px 0;border-bottom:1px solid #bae6fd}
-.advice-list li:last-child{border:none}
-.actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
-.btn{padding:12px 24px;border:none;border-radius:36px;font-weight:600;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;transition:.2s}
-.btn-dark{background:#0f172a;color:#fff}
-.btn-dark:hover{background:#1e293b}
-.btn-dark.recording{background:#dc2626}
-.btn-blue{background:#3b82f6;color:#fff}
-.btn-blue:hover{background:#2563eb}
-.btn-outline{background:transparent;border:2px solid #e2e8f0;color:#1e293b}
-.btn-outline:hover{background:#f8fafc}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.status{padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:13px;display:none}
-.status.error{background:#fef2f2;color:#dc2626;border-left:3px solid #dc2626}
-.status.info{background:#f0f9ff;color:#0369a1;border-left:3px solid #0ea5e9}
-.status.ok{background:#f0fdf4;color:#16a34a;border-left:3px solid #16a34a}
-.recognized-text{background:#f8fafc;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:14px;color:#334155;display:none;border:1px solid #eef2f6}
-.recognized-text strong{color:#0f172a}
-@media(max-width:640px){.viz{grid-template-columns:1fr}.actions{flex-direction:column}.btn{justify-content:center}}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:#f0f2f5;min-height:100vh;display:flex;justify-content:center;padding:16px;color:#333}
+.app{max-width:720px;width:100%;background:#fff;border-radius:20px;box-shadow:0 8px 30px rgba(0,0,0,.06);padding:24px}
+header{text-align:center;margin-bottom:18px}
+h1{font-size:22px;color:#1a1a2e;display:flex;align-items:center;justify-content:center;gap:8px}
+h1 .badge{font-size:11px;background:#3b82f6;color:#fff;padding:2px 8px;border-radius:10px;font-weight:500}
+.subtitle{font-size:12px;color:#888;margin-top:4px;line-height:1.5}
+.tabs{display:flex;margin-bottom:16px;border-bottom:2px solid #f0f0f0}
+.tab-btn{flex:1;padding:10px;border:none;background:none;font-size:15px;color:#999;cursor:pointer;position:relative;font-weight:500;transition:.2s}
+.tab-btn.active{color:#3b82f6}
+.tab-btn.active::after{content:"";position:absolute;bottom:-2px;left:0;width:100%;height:2px;background:#3b82f6;border-radius:2px}
+.input-area{margin-bottom:14px}
+label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;color:#333}
+textarea{width:100%;height:68px;padding:12px 14px;border:2px solid #e8e8e8;border-radius:12px;font-size:16px;resize:none;transition:.2s;font-family:inherit}
+textarea:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.hint{font-size:12px;color:#999;margin-top:6px;line-height:1.6}
+.hint code{background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:11px;color:#555}
+.quick-words{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.qbtn{padding:5px 12px;background:#f5f5f5;border:1px solid #e8e8e8;border-radius:16px;font-size:12px;color:#555;cursor:pointer;transition:.15s}
+.qbtn:hover{background:#e8f0fe;border-color:#b3d4fc;color:#3b82f6}
+.canvas-row{display:flex;gap:12px;margin-bottom:14px}
+.canvas-box{flex:1;background:#fafbfc;border:1px solid #eef0f2;border-radius:12px;padding:8px;text-align:center}
+.canvas-box .c-title{font-size:11px;color:#888;margin-bottom:4px}
+canvas{width:100%;height:48px;background:#fff;border-radius:6px;display:block}
+.btn-row{display:flex;gap:10px;margin-bottom:12px}
+.btn{flex:1;padding:12px;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.2s;font-family:inherit}
+.btn-primary{background:#1a1a2e;color:#fff}
+.btn-primary:hover{background:#2d2d4e}
+.btn-primary.recording{background:#e74c3c;animation:pulse 1.5s infinite}
+.btn-secondary{background:#f0f4ff;color:#3b82f6;border:1px solid #dbeafe}
+.btn-secondary:hover{background:#e0eaff}
+.btn-danger{background:#fef2f2;color:#e74c3c;border:1px solid #fecaca}
+.btn-danger:hover{background:#fee2e2}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.status{text-align:center;font-size:13px;color:#666;min-height:20px;margin-bottom:8px;padding:6px 10px;border-radius:8px}
+.status.error{background:#fef2f2;color:#e74c3c}
+.status.success{background:#f0fdf4;color:#16a34a}
+.status.info{background:#f0f9ff;color:#0369a1}
+.result{display:none;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.score-card{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;border-radius:16px;padding:18px;margin-bottom:16px;display:flex;align-items:center;gap:16px}
+.score-circle{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.score-num{font-size:24px;font-weight:700;line-height:1}
+.score-label{font-size:10px;opacity:.8;margin-top:2px}
+.score-info h3{font-size:17px;margin-bottom:3px}
+.score-info p{font-size:12px;opacity:.9;margin:0}
+.chars{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.char-card{border:2px solid #e8e8e8;border-radius:10px;padding:8px 6px;text-align:center;min-width:56px;background:#fff}
+.char-card.ok{border-color:#16a34a;background:#f0fdf4}
+.char-card.warn{border-color:#f59e0b;background:#fffbeb}
+.char-card.bad{border-color:#e74c3c;background:#fef2f2}
+.char-cn{font-size:18px;font-weight:700;margin-bottom:1px}
+.char-py{font-size:10px;color:#888;margin-bottom:1px}
+.char-tone{font-size:10px;color:#666;margin-bottom:2px}
+.char-dev{font-size:10px;font-weight:600}
+.char-dev.high{color:#e74c3c}
+.char-dev.low{color:#f59e0b}
+.char-dev.ok{color:#16a34a}
+.advice{background:#f0f9ff;border-left:4px solid #3b82f6;border-radius:0 12px 12px 0;padding:14px 16px;margin-bottom:14px}
+.advice h3{font-size:14px;color:#1e40af;margin-bottom:6px}
+.advice ul{font-size:12px;line-height:1.8;color:#1e3a5f;padding-left:16px;margin:0}
+.advice li{padding:2px 0;border-bottom:1px solid #dbeafe}
+.advice li:last-child{border-bottom:none}
+.recognized{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#475569}
+.recognized strong{color:#1a1a2e}
+@media(max-width:600px){.canvas-row{flex-direction:column}.btn-row{flex-wrap:wrap}.btn{flex:none;width:100%}.chars{justify-content:center}}
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="title">🎙️ 发音评测 <span>New</span></div>
-  <div class="subtitle">输入中文，录音后自动分析声调、轻声、儿化 | Type Chinese, record, get instant tone analysis</div>
+<header>
+<h1>🔊 发音评测 <span class="badge">轻量版</span></h1>
+<div class="subtitle">输入中文即可测评 · 轻声用(轻)标注 · 儿化直接写"儿"字<br>Type Chinese · Use (轻) for neutral · Write "儿" for erhua</div>
+</header>
 
-  <div class="tabs">
-    <button class="tab active" id="tabText" onclick="switchTab('text')">📝 文本测评 | Text</button>
-    <button class="tab" id="tabFree" onclick="switchTab('free')">🗣️ 自由说 | Free Speak</button>
-  </div>
+<div class="tabs">
+<button class="tab-btn active" data-tab="text">📝 文本测评</button>
+<button class="tab-btn" data-tab="free">🗣️ 自由说</button>
+</div>
 
-  <div id="textMode">
-    <textarea id="inputText" placeholder="输入中文，如：妈妈的花儿 | Type Chinese, e.g. 妈妈的花儿"></textarea>
-    <div class="input-hint">
-      💡 轻声：后加 <code>(轻)</code>，如 <code>妈妈(轻)</code> ｜ 儿化：直接写"儿"，如 <code>花儿</code>、<code>玩儿</code>
-    </div>
-  </div>
+<div id="textMode">
+<div class="input-area">
+<label for="inputText">输入中文文本</label>
+<textarea id="inputText" placeholder="例如：妈妈(轻) 花儿 中国加油"></textarea>
+<div class="hint">
+轻声：在字后加 <code>(轻)</code>，如 <code>妈妈(轻)</code> · 儿化：直接写 <code>儿</code>，如 <code>花儿</code> <code>玩儿</code><br>
+系统自动判断"儿"是否为儿化音（"男儿""婴儿"的"儿"按普通二声，不儿化）
+</div>
+<div class="quick-words">
+<button class="qbtn" data-text="妈妈(轻)">妈妈(轻)</button>
+<button class="qbtn" data-text="花儿">花儿</button>
+<button class="qbtn" data-text="桌子(轻)">桌子(轻)</button>
+<button class="qbtn" data-text="玩儿">玩儿</button>
+<button class="qbtn" data-text="中国加油">中国加油</button>
+<button class="qbtn" data-text="男儿">男儿</button>
+<button class="qbtn" data-text="的(轻)">的(轻)</button>
+<button class="qbtn" data-text="这儿">这儿</button>
+<button class="qbtn" data-text="小狗儿">小狗儿</button>
+<button class="qbtn" data-text="女孩儿">女孩儿</button>
+<button class="qbtn" data-text="鸟儿">鸟儿</button>
+<button class="qbtn" data-text="金鱼儿">金鱼儿</button>
+</div>
+</div>
+</div>
 
-  <div id="freeMode" style="display:none">
-    <div class="input-hint">
-      💡 点"开始录音"，自由说话，系统自动识别内容并测评声调、轻声、儿化
-    </div>
-  </div>
+<div id="freeMode" style="display:none">
+<div class="input-area">
+<label>🗣️ 自由说模式</label>
+<div class="hint" style="padding:10px;background:#f8fafc;border-radius:8px;margin-top:4px;line-height:1.7">
+点击「开始录音」，对着麦克风说话，系统会<strong>自动识别</strong>并生成测评报告。<br>
+无需预先输入任何文本，说完即测。识别结果会显示在报告上方。
+</div>
+</div>
+</div>
 
-  <div class="status" id="statusMsg"></div>
-  <div class="recognized-text" id="recognizedText"></div>
+<div class="canvas-row">
+<div class="canvas-box">
+<div class="c-title">声波 Waveform</div>
+<canvas id="waveCanvas"></canvas>
+</div>
+<div class="canvas-box">
+<div class="c-title">音高 Pitch</div>
+<canvas id="pitchCanvas"></canvas>
+</div>
+</div>
 
-  <div class="viz">
-    <div class="viz-panel"><div class="viz-title">🌊 声波 | Waveform</div><canvas id="waveCanvas"></canvas></div>
-    <div class="viz-panel"><div class="viz-title">🎵 音高 | Pitch (F0)</div><canvas id="pitchCanvas"></canvas></div>
-  </div>
+<div class="btn-row">
+<button class="btn btn-primary" id="recordBtn">● 开始录音</button>
+<button class="btn btn-secondary" id="playBtn" disabled>🔊 标准发音</button>
+<button class="btn btn-danger" id="resetBtn">🔄 重置</button>
+</div>
 
-  <div class="score-card" id="scoreCard">
-    <div class="score-row">
-      <div><div class="score-num" id="totalScore">0</div><div class="score-level" id="scoreLevel">-</div></div>
-      <div style="text-align:right"><div style="font-size:12px;opacity:.85">准确率</div><div class="score-acc" id="accuracyRate">0%</div></div>
-    </div>
-  </div>
+<div class="status" id="statusMsg"></div>
 
-  <div class="cards" id="charCards"></div>
-
-  <div class="advice" id="adviceBox">
-    <div class="advice-title">💬 纠偏建议 | Suggestions</div>
-    <ul class="advice-list" id="adviceList"></ul>
-  </div>
-
-  <div class="actions">
-    <button class="btn btn-dark" id="recordBtn" onclick="toggleRecording()">🎙️ 开始录音 | Start</button>
-    <button class="btn btn-blue" id="playBtn" onclick="playStandard()" disabled>🔊 标准发音 | Play</button>
-    <button class="btn btn-outline" onclick="resetAll()">🔄 重置 | Reset</button>
-  </div>
+<div class="result" id="resultSection">
+<div class="recognized" id="recognizedText" style="display:none"></div>
+<div class="score-card">
+<div class="score-circle">
+<span class="score-num" id="scoreNum">0</span>
+<span class="score-label">SCORE</span>
+</div>
+<div class="score-info">
+<h3 id="scoreTitle">--</h3>
+<p id="scoreDesc">--</p>
+</div>
+</div>
+<div class="chars" id="charsContainer"></div>
+<div class="advice">
+<h3>💡 纠偏建议 Suggestions</h3>
+<ul id="adviceList"></ul>
+</div>
+</div>
 </div>
 
 <script>
-// ========== 全局 ==========
-let mode = 'text';
+// ============================ 配置 ============================
+const SAMPLE_RATE = 16000;
+const F0_MIN = 50;
+const F0_MAX = 500;
+const SILENCE_THRESHOLD = 0.015;
+
+// ============================ DOM ============================
+const inputText = document.getElementById('inputText');
+const waveCanvas = document.getElementById('waveCanvas');
+const pitchCanvas = document.getElementById('pitchCanvas');
+const recordBtn = document.getElementById('recordBtn');
+const playBtn = document.getElementById('playBtn');
+const resetBtn = document.getElementById('resetBtn');
+const statusMsg = document.getElementById('statusMsg');
+const resultSection = document.getElementById('resultSection');
+const charsContainer = document.getElementById('charsContainer');
+const adviceList = document.getElementById('adviceList');
+const scoreNum = document.getElementById('scoreNum');
+const scoreTitle = document.getElementById('scoreTitle');
+const scoreDesc = document.getElementById('scoreDesc');
+const recognizedText = document.getElementById('recognizedText');
+
+const waveCtx = waveCanvas.getContext('2d');
+const pitchCtx = pitchCanvas.getContext('2d');
+
+// ============================ 状态 ============================
+let audioCtx = null;
+let analyser = null;
+let mic = null;
+let scriptNode = null;
 let isRecording = false;
-let audioCtx = null, analyser = null, mic = null, proc = null;
-let audioBuf = [], pitchBuf = [];
-let waveCanvas, waveCtx, pitchCanvas, pitchCtx;
-let calibratedF0 = 150, isCalibrated = false;
-let lastRecognitionText = '';
+let audioBuffer = [];
+let pitchBuffer = [];
+let calibratedF0 = 150;
+let isCalibrated = false;
+let recognition = null;
+let currentMode = 'text';
+let pendingText = '';
+let recognitionStarted = false;
 
-// 儿化字集合（"儿"紧跟前面字时合并为儿化词）
-const ERHUA_WORDS = ['花','玩','这','那','哪','一会儿','小孩'];
-// 轻声字集合
-const NEUTRAL_CHARS = ['们','的','了','吗','呢','吧','啊','嘛','子','头','么','过','着','得','地'];
-// 多字词字典（优先匹配）
-const WORD_DICT = {
-  '妈妈': { py: ['mā','ma(轻)'], tone: [1,0] },
-  '桌子': { py: ['zhuō','zi(轻)'], tone: [1,0] },
-  '椅子': { py: ['yǐ','zi(轻)'], tone: [3,0] },
-  '衣服': { py: ['yī','fu(轻)'], tone: [1,0] },
-  '明白': { py: ['míng','bai(轻)'], tone: [2,0] },
-  '东西': { py: ['dōng','xi(轻)'], tone: [1,0] },
-  '舒服': { py: ['shū','fu(轻)'], tone: [1,0] },
-  '花儿': { py: ['huā','ér(儿)'], tone: [1,2] },
-  '这儿': { py: ['zhè','ér(儿)'], tone: [4,2] },
-  '那儿': { py: ['nà','ér(儿)'], tone: [4,2] },
-  '玩儿': { py: ['wán','ér(儿)'], tone: [2,2] },
-  '中国': { py: ['zhōng','guó'], tone: [1,2] },
-  '加油': { py: ['jiā','yóu'], tone: [1,2] }
+// ============================ 声调字典 ============================
+const TONE_MAP = {
+'妈':1,'麻':2,'马':3,'骂':4,'吗':0,'嘛':0,
+'花':1,'华':2,'画':4,'话':4,
+'儿':2,'耳':3,'二':4,'而':2,
+'的':0,'了':0,'呢':0,'着':0,
+'桌':1,'子':0,
+'中':1,'国':2,'加':1,'油':2,
+'你':3,'好':3,'世':4,'界':4,
+'今':1,'天':1,'很':3,'高':1,'兴':1,
+'我':3,'爱':4,
+'平':2,'瓶':2,'评':2,
+'果':3,'裹':3,
+'男':2,'女':3,'老':3,'人':2,
+'孩':2,'红':2,'颜':2,'色':4,'白':2,'雪':3,'山':1,
+'玩':2,'这':4,'那':4,'哪':3,
+'小':3,'鸟':3,'狗':3,'大':4,'不':4,'是':4,
+'在':4,'有':3,'他':1,'她':1,'它':1,
+'们':0,'地':4,'得':0,'过':4,
+'说':1,'看':4,'听':1,'走':3,
+'来':2,'去':4,'上':4,'下':4,
+'左':3,'右':4,'前':2,'后':4,
+'一':4,'三':1,'四':4,'五':3,'六':4,'七':1,'八':1,'九':3,'十':2,
+'年':2,'月':4,'日':4,'时':2,'分':1,'秒':3,
+'春':1,'夏':4,'秋':1,'冬':1,
+'风':1,'云':2,'雨':3,'雷':2,
+'鱼':2,'虫':2,'草':3,'树':4,
+'朋':2,'友':3,'师':1,'同':2,'学':2,
+'健':4,'婴':1,'幼':4,'宠':3,'孙':1,
+'金':1,'偷':1,'笑':4,'李':3,'行':2,'卷':3
 };
 
-// 单字拼音+声调
-const CHAR_DICT = {
-  '妈':'mā|1','麻':'má|2','马':'mǎ|3','骂':'mà|4',
-  '花':'huā|1','儿':'ér|2','桌':'zhuō|1','子':'zi|0',
-  '我':'wǒ|3','爱':'ài|4','你':'nǐ|3','他':'tā|1',
-  '中':'zhōng|1','国':'guó|2','加':'jiā|1','油':'yóu|2',
-  '好':'hǎo|3','不':'bù|4','是':'shì|4','大':'dà|4',
-  '小':'xiǎo|3','多':'duō|1','少':'shǎo|3','快':'kuài|4',
-  '慢':'màn|4','高':'gāo|1','低':'dī|1','长':'cháng|2',
-  '短':'duǎn|3','开':'kāi|1','关':'guān|1','来':'lái|2',
-  '去':'qù|4','上':'shàng|4','下':'xià|4','左':'zuǒ|3',
-  '右':'yòu|4','人':'rén|2','口':'kǒu|3','手':'shǒu|3',
-  '足':'zú|2','目':'mù|4','耳':'ěr|3','鼻':'bí|2',
-  '天':'tiān|1','地':'dì|4','水':'shuǐ|3','火':'huǒ|3',
-  '风':'fēng|1','雨':'yǔ|3','山':'shān|1','石':'shí|2',
-  '田':'tián|2','土':'tǔ|3','日':'rì|4','月':'yuè|4',
-  '星':'xīng|1','云':'yún|2','电':'diàn|4','雪':'xuě|3'
-};
+// ============================ 儿化词库（确定是儿化的词） ============================
+const ERHUA_WORDS = [
+'花儿','鸟儿','金鱼儿','小孩儿','男孩儿','女孩儿','老头儿','小偷儿','一块儿','一点儿','有点儿',
+'这儿','那儿','哪儿','今儿','明儿','外边儿','旁边儿',
+'玩儿','下巴儿','嘴角儿','门儿','窗儿','墙儿',
+'小狗儿','弯儿','尖儿','亮儿','缝儿','样儿','坛儿','印儿','影儿','景儿','劲儿',
+'胡同儿','片儿','边儿','包儿','本儿','车儿','虫儿','船儿','串儿','袋儿',
+'蛋儿','刀儿','灯儿','碟儿','钉儿','豆儿','蛾儿','耳儿','帆儿','粉儿',
+'缸儿','盖儿','歌儿','格儿','个儿','根儿','梗儿','钩儿','盒儿',
+'猴儿','画儿','话儿','火儿','机儿','记儿','夹儿','家儿','假儿','架儿',
+'茧儿','浆儿','脚儿','饺儿','轿儿','结儿','菌儿','卡片儿',
+'壳儿','颗儿','刻儿','客儿','空儿','口儿','扣儿','框儿','篮儿',
+'浪儿','累儿','泪儿','梨儿','俩儿','链儿','铃儿','领儿',
+'盛儿','石儿','事儿','收儿','鼠儿','束儿','耍儿','帅儿','死儿',
+'穗儿','台阶儿','潭儿','桃儿','藤儿','梯儿','天儿','条儿','头儿',
+'图儿','团儿','腿儿','网儿','味儿','蚊儿','纹儿','问儿','窝儿','虾儿',
+'匣儿','夏儿','闲儿','弦儿','箱儿','巷儿','象儿','小伙儿','小曲儿','小雨儿',
+'小枣儿','笑话儿','心包儿','心房儿','新月儿','星球儿','行李卷儿','燕儿',
+'羊儿','样儿','药方儿','咬儿','药儿','叶儿','音符儿','邮儿','月儿','云儿',
+'韵儿','运动场','渣儿','宅儿','照儿','阵儿','纸儿','中间儿','抓阄儿','准儿',
+'桌儿','面儿','词儿','调儿','谱儿','范儿','光儿','声儿','音儿','字儿','句儿','篇儿'
+];
 
-// 标准五度值曲线
+// 这些词里的"儿"是独立汉字（二声），不是儿化音
+// 判断标准：词的核心含义包含"儿"作为独立语素（指孩子/后代），而非后缀
+const NOT_ERHUA = [
+'男儿','女儿','婴儿','幼儿','宠儿','胎儿','孤儿','健儿','儿女','儿孙',
+'儿戏','儿时','儿语','儿辈','儿马','儿茶','儿肥','儿宽','儿大',
+'产儿','孩儿','小女儿','男孩子','女孩子'
+];
+
+// ============================ 标准五度值曲线 ============================
 const STD_CURVES = {
-  1:[5,5,5,5,5], 2:[3,3.5,4,4.5,5], 3:[2,1,2,3,4], 4:[5,4,3,2,1], 0:[2,1.5,1,0.5,0.5]
+1: [5,5,5,5,5],
+2: [3,3.5,4,4.5,5],
+3: [2,1,2,3,4],
+4: [5,4,3,2,1],
+0: [2,1.5,1,0.5,0.5],
+'er': [3,3.5,4,4.5,5]
 };
 
-// ========== 初始化 ==========
-document.addEventListener('DOMContentLoaded', () => {
-  waveCanvas = document.getElementById('waveCanvas');
-  pitchCanvas = document.getElementById('pitchCanvas');
-  waveCtx = waveCanvas.getContext('2d');
-  pitchCtx = pitchCanvas.getContext('2d');
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
-  showStatus('info', '就绪 | Ready. 输入中文或切换自由说，点开始录音');
-});
-
-function resizeCanvas() {
-  [waveCanvas, pitchCanvas].forEach(c => {
-    c.width = c.parentElement.clientWidth;
-    c.height = 80;
-  });
-  clearC(waveCtx, waveCanvas);
-  clearC(pitchCtx, pitchCanvas);
-}
-
-function clearC(ctx, c) { ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height); }
-
-function showStatus(type, msg) {
-  const el = document.getElementById('statusMsg');
-  el.className = 'status ' + type;
-  el.innerHTML = msg;
-  el.style.display = 'block';
-  if (type !== 'error') setTimeout(() => el.style.display='none', 5000);
-}
-
-// ========== Tab 切换 ==========
-function switchTab(t) {
-  mode = t;
-  document.getElementById('tabText').classList.toggle('active', t==='text');
-  document.getElementById('tabFree').classList.toggle('active', t==='free');
-  document.getElementById('textMode').style.display = t==='text' ? 'block' : 'none';
-  document.getElementById('freeMode').style.display = t==='free' ? 'block' : 'none';
-  resetResultUI();
-}
-
-// ========== 输入解析（核心修复：正确处理轻声/儿化） ==========
+// ============================ 解析输入文本（修复版） ============================
 function parseInput(text) {
-  const result = [];
-  let i = 0;
-  // 去掉空格
-  text = text.replace(/\s/g, '');
+    var results = [];
+    if (!text) return results;
 
-  while (i < text.length) {
-    let matched = false;
+    // Step 1: 把 (轻) 和 (儿) 替换成特殊标记
+    var s = text.replace(/\(轻\)/g, '\x00').replace(/\(儿\)/g, '\x01');
 
-    // 1) 先匹配多字词（如 妈妈(轻)、花儿(儿)、中国）
-    // 检查 (轻) (儿) 标记
-    let annotated = '';
-    if (i < text.length - 2) {
-      const tail = text.slice(i, i + 3);
-      if (tail.endsWith('(轻)')) annotated = tail.slice(0,-3);
-      if (tail.endsWith('(儿)')) annotated = tail.slice(0,-3);
-    }
+    // Step 2: 提取纯汉字序列（用于儿化词匹配）
+    var arr = Array.from(s);
+    var pure = [];
+    arr.forEach(function(ch) {
+        if (ch === '\x00' || ch === '\x01') return;
+        if (/[\s，。.!！?？、；;：:"\"''（）()【】\[\]]/.test(ch)) return;
+        if (/[\u4e00-\u9fa5]/.test(ch)) pure.push(ch);
+    });
+    var pureStr = pure.join('');
 
-    // 尝试多字词 + 可选标注
-    for (const word of Object.keys(WORD_DICT)) {
-      if (text.startsWith(word, i)) {
-        // 检查后面是否紧跟 (轻) 或 (儿)
-        let toneOverride = null;
-        if (text.startsWith('(轻)', i + word.length)) {
-          toneOverride = word.split('').map(c => NEUTRAL_CHARS.includes(c) || c==='们' ? 0 : 0);
-          // 全部轻声
-          toneOverride = word.split('').map(()=>0);
+    // Step 3: 儿化词匹配
+    // 按长度倒序，优先匹配长词
+    var sortedEr = ERHUA_WORDS.slice().sort(function(a, b) { return b.length - a.length; });
+    var used = new Array(pure.length).fill(false);
+    var erhuaPureIdx = new Set();
+
+    sortedEr.forEach(function(word) {
+        // 检查是否在 NOT_ERHUA 中
+        if (NOT_ERHUA.indexOf(word) !== -1) return;
+        var sf = 0;
+        while (sf <= pureStr.length - word.length) {
+            var pos = pureStr.indexOf(word, sf);
+            if (pos === -1) break;
+            var conflict = false;
+            for (var k = pos; k < pos + word.length; k++) {
+                if (used[k]) { conflict = true; break; }
+            }
+            if (!conflict) {
+                for (var k2 = pos; k2 < pos + word.length; k2++) used[k2] = true;
+                // 儿化标记：词中"儿"前面的那个字
+                var erIdx = pos + word.length - 1;
+                // 如果"儿"是词的最后一个字，标记前一个字
+                if (word.charAt(word.length - 1) === '儿') {
+                    erIdx = pos + word.length - 2;
+                } else {
+                    erIdx = pos + word.length - 1;
+                }
+                if (erIdx >= 0 && erIdx < pure.length) {
+                    erhuaPureIdx.add(erIdx);
+                }
+            }
+            sf = pos + 1;
         }
-        const info = WORD_DICT[word];
-        const tones = toneOverride || info.tone;
-        const pys = info.py;
-        word.split('').forEach((ch, idx) => {
-          const t = tones[idx] ?? tones[0];
-          const py = pys[idx] ?? pys[0];
-          result.push({
-            char: ch, py,
-            tone: t,
-            isNeutral: t === 0,
-            isErhua: py.includes('(儿)')
-          });
-        });
-        i += word.length;
-        if (text.startsWith('(轻)', i)) i += 3;
-        if (text.startsWith('(儿)', i)) i += 3;
-        matched = true;
-        break;
-      }
-    }
-    if (matched) continue;
+    });
 
-    // 2) 儿化合并：当前字 + 下一个字是"儿" → 合并为儿化词
-    if (i < text.length - 1 && text[i+1] === '儿') {
-      const ch = text[i];
-      const charInfo = CHAR_DICT[ch] ? CHAR_DICT[ch].split('|') : [ch+'ā','1'];
-      const basePy = charInfo[0].replace(/[1-4]/,'');
-      result.push({
-        char: ch + '儿',
-        py: basePy + 'r(儿)',
-        tone: 2, // 儿化按二声上升趋势
-        isNeutral: false,
-        isErhua: true
-      });
-      i += 2; // 跳过 字+儿
-      matched = true;
-    }
-    if (matched) continue;
+    // Step 4: 遍历原始字符，构建结果
+    var pureIdx = 0;
 
-    // 3) 单字 + (轻)/(儿) 标注
-    if (i < text.length) {
-      const ch = text[i];
-      // 检查后跟标注
-      if (text.startsWith('(轻)', i+1)) {
-        result.push({ char: ch, py: ch+'(轻)', tone: 0, isNeutral: true, isErhua: false });
-        i += 1 + 3;
-        matched = true;
-      } else if (text.startsWith('(儿)', i+1)) {
-        const charInfo = CHAR_DICT[ch] ? CHAR_DICT[ch].split('|') : [ch+'ā','1'];
-        const basePy = charInfo[0].replace(/[1-4]/,'');
-        result.push({ char: ch, py: basePy+'r(儿)', tone: 2, isNeutral: false, isErhua: true });
-        i += 1 + 3;
-        matched = true;
-      } else {
-        // 纯单字：查字典，或判断是否为轻声字
-        const dict = CHAR_DICT[ch];
-        if (dict) {
-          const [py, tn] = dict.split('|');
-          const t = parseInt(tn);
-          result.push({ char: ch, py, tone: t, isNeutral: t===0, isErhua: false });
-        } else {
-          // 未知字：启发式判断轻声
-          const isNeu = NEUTRAL_CHARS.includes(ch);
-          result.push({ char: ch, py: ch+(isNeu?'轻':'?'), tone: isNeu?0:1, isNeutral: isNeu, isErhua: false });
+    arr.forEach(function(ch) {
+        // 跳过空白和标点
+        if (/[\s，。.!！?？、；;：:"\"''（）()【】\[\]]/.test(ch)) return;
+
+        // (轻) 标记：把前一个字设为轻声
+        if (ch === '\x00') {
+            if (results.length > 0) {
+                results[results.length - 1].tone = 0;
+                results[results.length - 1].isLight = true;
+            }
+            return;
         }
-        i += 1;
-        matched = true;
-      }
-    }
-  }
-  return result;
+
+        // (儿) 标记：把前一个字设为儿化
+        if (ch === '\x01') {
+            if (results.length > 0) {
+                results[results.length - 1].isErhua = true;
+                results[results.length - 1].tone = 2;
+            }
+            return;
+        }
+
+        if (/[\u4e00-\u9fa5]/.test(ch)) {
+            // 检查这个字是否被标记为儿化的"儿"后缀
+            if (ch === '儿' && used[pureIdx]) {
+                // 是儿化词的"儿"后缀，跳过
+                pureIdx++;
+                return; // forEach中用return代替continue
+            }
+
+            var isErhua = erhuaPureIdx.has(pureIdx);
+            var tone;
+
+            if (isErhua) {
+                tone = 2; // 儿化音按二声曲线
+            } else if (ch === '儿') {
+                tone = 2; // 独立"儿"字，二声
+            } else {
+                tone = TONE_MAP[ch] !== undefined ? TONE_MAP[ch] : 1;
+            }
+
+            results.push({
+                char: ch,
+                pinyin: ch,
+                tone: tone,
+                isLight: (tone === 0),
+                isErhua: isErhua
+            });
+
+            pureIdx++;
+        }
+    });
+
+    return results;
 }
 
-// ========== 录音控制 ==========
+// ============================ 录音控制 ============================
 async function toggleRecording() {
-  if (isRecording) { stopRecording(); return; }
+    if (isRecording) { stopRecording(); return; }
 
-  if (mode === 'text') {
-    const t = document.getElementById('inputText').value.trim();
-    if (!t) return showStatus('error', '请先输入中文 | Please type Chinese first');
-  }
+    if (currentMode === 'text') {
+        var text = inputText.value.trim();
+        if (!text) { showStatus('error', '请先输入中文文本'); return; }
+    }
 
-  try { await startRecording(); }
-  catch(e) { console.error(e); showStatus('error','录音失败 | Failed: '+e.message); stopRecording(); }
+    try {
+        await startRecording();
+    } catch (err) {
+        console.error('录音错误:', err);
+        showStatus('error', '录音失败：' + err.message + '。请检查麦克风权限。');
+        stopRecording();
+    }
 }
 
 async function startRecording() {
-  isRecording = true;
-  audioBuf = []; pitchBuf = [];
-  const btn = document.getElementById('recordBtn');
-  btn.classList.add('recording');
-  btn.innerHTML = '⏹️ 停止 | Stop';
-  clearC(waveCtx, waveCanvas); clearC(pitchCtx, pitchCanvas);
-  resetResultUI();
+    isRecording = true;
+    audioBuffer = [];
+    pitchBuffer = [];
+    recognitionStarted = false;
 
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio:{sampleRate:16000,channelCount:1,echoCancellation:false,noiseSuppression:false,autoGainControl:false}
-  });
-  audioCtx = new (window.AudioContext||window.webkitAudioContext)({sampleRate:16000});
-  analyser = audioCtx.createAnalyser();
-  mic = audioCtx.createMediaStreamSource(stream);
-  proc = audioCtx.createScriptProcessor(4096,1,1);
-  mic.connect(analyser); analyser.connect(proc); proc.connect(audioCtx.destination);
-  analyser.fftSize = 2048;
-  const td = new Float32Array(4096);
+    recordBtn.classList.add('recording');
+    recordBtn.textContent = '■ 停止录音';
+    clearCanvas(waveCtx, waveCanvas);
+    clearCanvas(pitchCtx, pitchCanvas);
 
-  proc.onaudioprocess = e => {
-    analyser.getFloatTimeDomainData(td);
-    audioBuf.push(...Array.from(td));
-    drawWave(td);
-    const f0 = estF0(td, 16000);
-    if (f0>50 && f0<500) { pitchBuf.push(f0); drawPitch(f0); }
-  };
-  showStatus('ok','录音中… | Recording… 清晰朗读');
+    var stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+            sampleRate: SAMPLE_RATE,
+            channelCount: 1,
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false
+        }
+    });
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE });
+    analyser = audioCtx.createAnalyser();
+    mic = audioCtx.createMediaStreamSource(stream);
+    scriptNode = audioCtx.createScriptProcessor(4096, 1, 1);
+
+    analyser.fftSize = 2048;
+    mic.connect(analyser);
+    analyser.connect(scriptNode);
+    scriptNode.connect(audioCtx.destination);
+
+    var timeData = new Float32Array(4096);
+
+    scriptNode.onaudioprocess = function(e) {
+        analyser.getFloatTimeDomainData(timeData);
+        var data = new Float32Array(timeData);
+        audioBuffer.push(data);
+        drawWaveform(data);
+        var f0 = estimateF0(data, SAMPLE_RATE);
+        if (f0 >= F0_MIN && f0 <= F0_MAX) {
+            pitchBuffer.push(f0);
+            drawPitchPoint(f0);
+        }
+    };
+
+    // 自由说模式：启动语音识别
+    if (currentMode === 'free') {
+        startSpeechRecognition();
+    }
+
+    showStatus('success', currentMode === 'free' ? '正在聆听...说完会自动识别并测评' : '正在录音，请清晰朗读...');
 }
 
 function stopRecording() {
-  isRecording = false;
-  const btn = document.getElementById('recordBtn');
-  btn.classList.remove('recording');
-  btn.innerHTML = '🎙️ 开始录音 | Start';
-  try { proc && proc.disconnect(); mic && mic.disconnect(); analyser && analyser.disconnect(); audioCtx && audioCtx.close(); } catch(e){}
-  proc=null; mic=null; analyser=null; audioCtx=null;
+    isRecording = false;
+    recordBtn.classList.remove('recording');
+    recordBtn.textContent = '● 开始录音';
 
-  if (audioBuf.length < 1600) {
-    return showStatus('error','录音太短 | Too short, please try again');
-  }
+    if (scriptNode) { try { scriptNode.disconnect(); } catch(e) {} scriptNode.onaudioprocess = null; scriptNode = null; }
+    if (mic) { try { mic.disconnect(); } catch(e) {} mic = null; }
+    if (analyser) { try { analyser.disconnect(); } catch(e) {} analyser = null; }
+    if (audioCtx) { try { audioCtx.close(); } catch(e) {} audioCtx = null; }
+    if (recognition) { try { recognition.stop(); } catch(e) {} recognition = null; }
 
-  // 自由说模式：先语音识别，再测评
-  if (mode === 'free') {
-    runSpeechRecognition();
-  } else {
-    // 文本模式：直接测评
-    const text = document.getElementById('inputText').value.trim();
-    runEvaluation(text);
-  }
-}
+    if (audioBuffer.length === 0) {
+        showStatus('error', '未检测到音频，请靠近麦克风重试');
+        return;
+    }
 
-// ========== 语音识别（自由说模式） ==========
-function runSpeechRecognition() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    return showStatus('error','当前浏览器不支持语音识别，请使用 Chrome/Edge | Browser not supported, use Chrome/Edge');
-  }
-  const rec = new SR();
-  rec.lang = 'zh-CN';
-  rec.continuous = false;
-  rec.interimResults = false;
-
-  showStatus('info','正在识别你说的内容… | Recognizing speech…');
-
-  rec.onresult = e => {
-    const text = e.results[0][0].transcript.trim();
-    lastRecognitionText = text;
-    document.getElementById('recognizedText').style.display = 'block';
-    document.getElementById('recognizedText').innerHTML =
-      '识别结果 | Recognized: <strong>' + text + '</strong>';
-    // ★ 关键：识别完自动进入测评
-    runEvaluation(text);
-  };
-  rec.onerror = e => {
-    showStatus('error','识别失败 | Recognition failed: '+e.error);
-  };
-  rec.onend = () => {};
-  rec.start();
-}
-
-// ========== 核心测评引擎 ==========
-function runEvaluation(text) {
-  if (!text) return showStatus('error','无输入内容 | No input text');
-  const parsed = parseInput(text);
-  if (parsed.length === 0) return showStatus('error','解析失败，请检查输入 | Parse failed');
-
-  // 智能切片
-  const segments = splitBySilence(audioBuf, 16000);
-  const perSeg = Math.floor(audioBuf.length / parsed.length);
-
-  const toneResults = parsed.map((item, idx) => {
-    // 取对应时间段的音频
-    let segBuf;
-    if (segments.length === parsed.length) {
-      segBuf = segments[idx] || [];
+    // 自由说模式：如果识别还没返回结果，用定时器兜底
+    if (currentMode === 'free' && !pendingText) {
+        showStatus('info', '识别中，请稍候...');
+        var waitStart = Date.now();
+        var checkInterval = setInterval(function() {
+            if (pendingText || (Date.now() - waitStart > 5000)) {
+                clearInterval(checkInterval);
+                if (pendingText) {
+                    processRecording();
+                } else {
+                    showStatus('error', '语音识别超时，请重试');
+                }
+            }
+        }, 200);
     } else {
-      const start = idx * perSeg;
-      const end = Math.min((idx+1)*perSeg, audioBuf.length);
-      segBuf = audioBuf.slice(start, end);
+        processRecording();
     }
-    // 计算该段的基频序列
-    const f0List = [];
-    for (let i=0; i<segBuf.length; i+=2048) {
-      const chunk = segBuf.slice(i, i+2048);
-      if (chunk.length < 1024) break;
-      const f0 = estF0(new Float32Array(chunk), 16000);
-      if (f0>50 && f0<500) f0List.push(f0);
+}
+
+// ============================ 语音识别（自由说模式） ============================
+function startSpeechRecognition() {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+        showStatus('error', '当前浏览器不支持语音识别，请使用 Chrome 或 Edge');
+        return;
     }
-    // 平滑：去首尾20%异常
-    let avgF0 = 0;
-    if (f0List.length > 0) {
-      const sorted = [...f0List].sort((a,b)=>a-b);
-      const trim = sorted.slice(Math.floor(sorted.length*.15), Math.ceil(sorted.length*.85));
-      avgF0 = trim.reduce((a,b)=>a+b,0) / (trim.length || 1);
+
+    recognition = new SR();
+    recognition.lang = 'zh-CN';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognitionStarted = true;
+
+    recognition.onresult = function(e) {
+        // ✅ 修复：transcript 拼写正确
+        var transcript = e.results[0][0].transcript.trim();
+        showStatus('success', '识别到：' + transcript);
+        pendingText = transcript;
+        inputText.value = transcript;
+        recognizedText.style.display = 'block';
+        recognizedText.innerHTML = '<strong>识别结果：</strong>' + transcript;
+    };
+
+    recognition.onerror = function(e) {
+        console.error('识别错误:', e.error);
+        showStatus('error', '语音识别出错（' + e.error + '），将仅基于录音做分析');
+    };
+
+    recognition.onend = function() {
+        recognitionStarted = false;
+    };
+
+    try {
+        recognition.start();
+    } catch (e) {
+        console.error('启动识别失败:', e);
     }
-    const userFive = normF0(avgF0);
-    const stdFive = STD_CURVES[item.tone] ? STD_CURVES[item.tone][2] : 3;
-    const dev = userFive - stdFive;
-
-    return { ...item, avgF0, userFive, stdFive, deviation: dev };
-  });
-
-  renderReport(toneResults, text);
 }
 
-// ========== 渲染报告 ==========
-function renderReport(results, text) {
-  // 分数
-  let total = 0, errCount = 0;
-  results.forEach(r => {
-    const ad = Math.abs(r.deviation);
-    let s = 100;
-    if (ad > 0.3) s = Math.max(0, 100 - ad*18);
-    if (r.isNeutral && ad > 0.5) s = Math.max(0, 100 - ad*25);
-    total += s;
-    if (ad > 0.5) errCount++;
-  });
-  const avg = Math.round(total / results.length);
-  let level = '需努力', lvlColor = '#dc2626';
-  if (avg>=90){level='优秀';lvlColor='#16a34a';}
-  else if(avg>=75){level='良好';lvlColor='#3b82f6';}
-  else if(avg>=60){level='及格';lvlColor='#eab308';}
-
-  // 评分卡
-  const sc = document.getElementById('scoreCard');
-  sc.style.display='block';
-  sc.style.background = `linear-gradient(135deg, ${lvlColor}, #6366f1)`;
-  document.getElementById('totalScore').textContent = avg;
-  document.getElementById('scoreLevel').textContent = level;
-  document.getElementById('accuracyRate').textContent =
-    Math.round((results.length-errCount)/results.length*100)+'%';
-
-  // 逐字卡片
-  const cards = document.getElementById('charCards');
-  cards.innerHTML = '';
-  results.forEach(r => {
-    const ad = Math.abs(r.deviation);
-    let status = 'good', tag = '✓ 准确', tagClass='tag-good';
-    if (ad > 1) { status='bad'; tag='✗ ±'+r.deviation.toFixed(1); tagClass='tag-bad'; }
-    else if (ad > 0.3) { status='warn'; tag='~ ±'+r.deviation.toFixed(1); tagClass='tag-warn'; }
-    else { tag = '✓'; }
-
-    const div = document.createElement('div');
-    div.className = 'char-card '+status;
-    div.innerHTML = `
-      <div class="char-han">${r.char}</div>
-      <div class="char-py">${r.py}</div>
-      <div class="char-tag ${tagClass}">${tag}</div>
-    `;
-    cards.appendChild(div);
-  });
-
-  // 建议
-  const advBox = document.getElementById('adviceBox');
-  advBox.style.display='block';
-  const ul = document.getElementById('adviceList');
-  ul.innerHTML='';
-  const advMap = {
-    1:{hi:'一声偏高：保持平稳高音，声带紧绷不要下滑 | 1st too high: keep level, don\'t fall',
-       lo:'一声偏低：提高声带张力，维持在高位 | 1st too low: raise tension, stay high'},
-    2:{hi:'二声升幅过大：从中音缓慢上扬，不要跳跃 | 2nd overshoot: rise slowly from mid',
-       lo:'二声升幅不足：明显从中音升到高音 | 2nd undershoot: rise clearly to high'},
-    3:{hi:'三声最低点太高：先降到最低再回升 | 3rd dip too shallow: drop to bottom first',
-       lo:'三声不到位：先降后升要明显 | 3rd incomplete: clear dip-rise'},
-    4:{hi:'四声降太慢：快速从高到低 | 4th too slow: drop fast',
-       lo:'四声降不够：从高音快速落到底 | 4th insufficient: drop sharply to bottom'},
-    0:{hi:'轻声偏重：放松声带，短而轻，约前字一半时长 | Neutral too heavy: relax, short & light',
-       lo:'轻声偏短：保留一点长度但轻读 | Neutral too short: keep some length but light'}
-  };
-  results.forEach(r => {
-    const ad = r.deviation;
-    if (Math.abs(ad) > 0.5) {
-      const m = advMap[r.tone];
-      if (m) {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${r.char}(${r.py})</strong>: ${ad>0?m.hi:m.lo}`;
-        ul.appendChild(li);
-      }
+// ============================ 处理录音 ============================
+function processRecording() {
+    // 合并 audioBuffer
+    var totalLen = 0;
+    audioBuffer.forEach(function(b) { totalLen += b.length; });
+    if (totalLen === 0) {
+        showStatus('error', '未检测到有效音频');
+        return;
     }
-    if (r.isErhua && Math.abs(ad)>0.5) {
-      const li = document.createElement('li');
-      li.innerHTML = `<strong>${r.char}(${r.py})</strong>: 儿化舌尖上卷至硬腭中部 | Erhua: curl tongue tip to hard palate`;
-      ul.appendChild(li);
+
+    var merged = new Float32Array(totalLen);
+    var offset = 0;
+    audioBuffer.forEach(function(buf) {
+        merged.set(buf, offset);
+        offset += buf.length;
+    });
+
+    // 校准参考音高（取中位数）
+    var allF0 = extractAllF0(merged);
+    if (allF0.length > 5) {
+        var sorted = allF0.slice().sort(function(a,b) { return a-b; });
+        calibratedF0 = sorted[Math.floor(sorted.length * 0.5)];
+        isCalibrated = true;
     }
-  });
-  if (ul.children.length===0) {
-    const li=document.createElement('li');
-    li.textContent='🎉 所有发音准确！| All tones accurate!';
-    ul.appendChild(li);
-  }
 
-  document.getElementById('playBtn').disabled = false;
-  showStatus('ok','评测完成 | Evaluation complete');
+    // 确定文本
+    var text = '';
+    if (currentMode === 'free' && pendingText) {
+        text = pendingText;
+    } else {
+        text = inputText.value.trim();
+    }
+
+    if (!text) {
+        showStatus('error', '没有可测评的文本');
+        return;
+    }
+
+    // 解析文本
+    var parsed = parseInput(text);
+    if (parsed.length === 0) {
+        showStatus('error', '未能解析出有效汉字，请检查输入');
+        return;
+    }
+
+    // 按静音段切分音频
+    var segments = splitBySilence(merged);
+
+    // 分配音频段给每个字
+    var toneResults = assignSegmentsToChars(parsed, segments, merged);
+
+    // 渲染报告
+    renderReport(toneResults, text);
+
+    playBtn.disabled = false;
+    showStatus('success', '测评完成！查看下方报告');
 }
 
-// ========== 基频估计（自相关） ==========
-function estF0(buf, sr) {
-  const rms = Math.sqrt(buf.reduce((s,v)=>s+v*v,0)/buf.length);
-  if (rms < 0.015) return 0;
-  let maxC=0, bestP=0;
-  const mn=Math.floor(sr/500), mx=Math.floor(sr/50);
-  for (let p=mn; p<mx; p++) {
-    let c=0;
-    for (let i=0; i<buf.length-p; i++) c += buf[i]*buf[i+p];
-    c/=(buf.length-p);
-    if (c>maxC){maxC=c;bestP=p;}
-  }
-  return bestP? sr/bestP : 0;
+// ============================ 基频估计（自相关法） ============================
+function estimateF0(buffer, sampleRate) {
+    var sum = 0;
+    for (var i = 0; i < buffer.length; i++) sum += buffer[i] * buffer[i];
+    var rms = Math.sqrt(sum / buffer.length);
+    if (rms < SILENCE_THRESHOLD) return 0;
+
+    var maxCorr = 0;
+    var bestPeriod = 0;
+    var minP = Math.floor(sampleRate / F0_MAX);
+    var maxP = Math.floor(sampleRate / F0_MIN);
+
+    for (var p = minP; p < maxP; p++) {
+        var corr = 0;
+        var limit = buffer.length - p;
+        for (var j = 0; j < limit; j++) {
+            corr += buffer[j] * buffer[j + p];
+        }
+        corr /= limit;
+        if (corr > maxCorr) {
+            maxCorr = corr;
+            bestPeriod = p;
+        }
+    }
+
+    return bestPeriod > 0 ? sampleRate / bestPeriod : 0;
 }
 
-// ========== 音高归一化 ==========
-function normF0(f0) {
-  if (f0<=0) return 3;
-  const ratio = f0 / calibratedF0;
-  const five = 3 + Math.log2(ratio)*5;
-  return Math.max(1, Math.min(5, five));
+function extractAllF0(buffer) {
+    var f0List = [];
+    var frameSize = 512;
+    for (var i = 0; i < buffer.length - frameSize; i += Math.floor(frameSize / 2)) {
+        var frame = buffer.slice(i, Math.min(i + frameSize, buffer.length));
+        var f0 = estimateF0(frame, SAMPLE_RATE);
+        if (f0 >= F0_MIN && f0 <= F0_MAX) f0List.push(f0);
+    }
+    return f0List;
 }
 
-// ========== 静音切片 ==========
-function splitBySilence(buf, sr) {
-  const frame = Math.floor(sr*0.02), thr=0.015;
-  const segs=[], tmp=[];
-  let silent=true;
-  for (let i=0;i<buf.length;i+=frame) {
-    const f=buf.slice(i,i+frame);
-    const rms=Math.sqrt(f.reduce((s,v)=>s+v*v,0)/(f.length||1));
-    if (rms>thr) { if(silent){tmp=[];silent=false;} tmp.push(...f); }
-    else { if(!silent && tmp.length>0){segs.push(tmp);tmp=[];silent=true;} }
-  }
-  if (tmp.length>0) segs.push(tmp);
-  return segs;
+// ============================ 静音切分 ============================
+function splitBySilence(buffer) {
+    var segments = [];
+    var frameSize = Math.floor(SAMPLE_RATE * 0.025);
+    var isSilent = true;
+    var current = [];
+
+    for (var i = 0; i < buffer.length; i += frameSize) {
+        var end = Math.min(i + frameSize, buffer.length);
+        var frame = buffer.slice(i, end);
+        var sum = 0;
+        for (var k = 0; k < frame.length; k++) sum += frame[k] * frame[k];
+        var rms = Math.sqrt(sum / frame.length);
+
+        if (rms > SILENCE_THRESHOLD * 1.5) {
+            if (isSilent) { current = []; isSilent = false; }
+            for (var m = 0; m < frame.length; m++) current.push(frame[m]);
+        } else {
+            if (!isSilent && current.length > frameSize * 2) {
+                segments.push(new Float32Array(current));
+                current = [];
+                isSilent = true;
+            }
+        }
+    }
+
+    if (current.length > frameSize * 2) {
+        segments.push(new Float32Array(current));
+    }
+
+    return segments.length > 0 ? segments : [buffer];
 }
 
-// ========== 波形/音高绘制 ==========
-function drawWave(data) {
-  const c=waveCanvas, ctx=waveCtx, w=c.width, h=c.height;
-  ctx.drawImage(c,2,0,w-2,h,0,0,w-2,h);
-  ctx.fillStyle='#fff'; ctx.fillRect(w-2,0,2,h);
-  ctx.strokeStyle='#3b82f6'; ctx.lineWidth=1.5; ctx.beginPath();
-  const sw=(w-2)/data.length; let x=w-2;
-  for(let i=0;i<data.length;i++){const y=(0.5+data[i]*0.5)*h; i?ctx.lineTo(x,y):ctx.moveTo(x,y); x+=sw;}
-  ctx.stroke();
-}
-function drawPitch(f0) {
-  const c=pitchCanvas, ctx=pitchCtx, w=c.width, h=c.height;
-  ctx.drawImage(c,2,0,w-2,h,0,0,w-2,h);
-  ctx.fillStyle='#fff'; ctx.fillRect(w-2,0,2,h);
-  const five=normF0(f0), y=h-(five/5)*h;
-  ctx.fillStyle='#8b5cf6'; ctx.beginPath(); ctx.arc(w-1,y,2.5,0,Math.PI*2); ctx.fill();
+// ============================ 分配音频段给每个字 ============================
+function assignSegmentsToChars(parsed, segments, fullBuffer) {
+    var validSegments = segments.filter(function(seg) { return seg.length > SAMPLE_RATE * 0.05; });
+
+    return parsed.map(function(item, idx) {
+        var segF0 = [];
+
+        if (validSegments.length === parsed.length) {
+            segF0 = extractAllF0(validSegments[idx]);
+        } else if (validSegments.length > 0) {
+            var perChar = Math.max(1, Math.floor(validSegments.length / parsed.length));
+            var targetIdx = Math.min(idx * perChar, validSegments.length - 1);
+            segF0 = extractAllF0(validSegments[targetIdx]);
+        } else {
+            var startFrac = idx / parsed.length;
+            var endFrac = (idx + 1) / parsed.length;
+            var start = Math.floor(fullBuffer.length * startFrac);
+            var end = Math.floor(fullBuffer.length * endFrac);
+            segF0 = extractAllF0(fullBuffer.slice(start, end));
+        }
+
+        // 平滑：去掉最高10%和最低10%
+        var f0Values = segF0;
+        if (f0Values.length >= 5) {
+            var sorted = f0Values.slice().sort(function(a,b) { return a-b; });
+            var trim = Math.floor(sorted.length * 0.1);
+            f0Values = sorted.slice(trim, sorted.length - trim);
+        }
+
+        var avgF0 = f0Values.length > 0
+            ? f0Values.reduce(function(s,v) { return s+v; }, 0) / f0Values.length
+            : calibratedF0;
+
+        var fiveScale = normalizeToFiveScale(avgF0);
+
+        var stdCurve;
+        if (item.isErhua) stdCurve = STD_CURVES['er'];
+        else if (item.isLight) stdCurve = STD_CURVES[0];
+        else stdCurve = STD_CURVES[item.tone] || STD_CURVES[1];
+
+        var stdAvg = stdCurve[2];
+        var deviation = fiveScale - stdAvg;
+
+        return {
+            char: item.char,
+            pinyin: item.pinyin,
+            tone: item.tone,
+            isLight: item.isLight,
+            isErhua: item.isErhua,
+            userFiveScale: fiveScale,
+            standardFiveScale: stdAvg,
+            standardCurve: stdCurve,
+            deviation: deviation,
+            avgF0: avgF0
+        };
+    });
 }
 
-// ========== 其他 ==========
+// ============================ 五度值归一化 ============================
+function normalizeToFiveScale(f0) {
+    if (f0 <= 0) return 3;
+    var ratio = f0 / calibratedF0;
+    var logRatio = Math.log2(Math.max(ratio, 0.1));
+    var fiveScale = 3 + logRatio * 5;
+    return Math.max(1, Math.min(5, fiveScale));
+}
+
+// ============================ 绘制 ============================
+function drawWaveform(data) {
+    var w = waveCanvas.width;
+    var h = waveCanvas.height;
+    var ctx = waveCtx;
+    ctx.drawImage(waveCanvas, 2, 0, w-2, h, 0, 0, w-2, h);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(w-2, 0, 2, h);
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    var sliceW = 2 / data.length;
+    for (var i = 0; i < data.length; i++) {
+        var x = w - 2 + i * sliceW;
+        var y = (0.5 + data[i] * 0.4) * h;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+}
+
+function drawPitchPoint(f0) {
+    var w = pitchCanvas.width;
+    var h = pitchCanvas.height;
+    var ctx = pitchCtx;
+    ctx.drawImage(pitchCanvas, 2, 0, w-2, h, 0, 0, w-2, h);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(w-2, 0, 2, h);
+    var fiveScale = normalizeToFiveScale(f0);
+    var y = h - (fiveScale / 5) * h;
+    ctx.fillStyle = '#8b5cf6';
+    ctx.beginPath();
+    ctx.arc(w-1, y, 2, 0, Math.PI*2);
+    ctx.fill();
+}
+
+// ============================ 渲染报告 ============================
+function renderReport(toneResults, originalText) {
+    resultSection.style.display = 'block';
+
+    var totalScore = 0;
+    var scoredCount = 0;
+
+    toneResults.forEach(function(res) {
+        var absDev = Math.abs(res.deviation);
+        var score = 100;
+        if (absDev > 0.3 && absDev <= 0.8) score = 85;
+        else if (absDev > 0.8 && absDev <= 1.5) score = 70;
+        else if (absDev > 1.5) score = 50;
+
+        if (res.isLight || res.isErhua) {
+            if (absDev <= 1) score = 90;
+            else if (absDev <= 2) score = 75;
+            else score = 60;
+        }
+
+        totalScore += score;
+        scoredCount++;
+    });
+
+    var avgScore = scoredCount > 0 ? Math.round(totalScore / scoredCount) : 0;
+
+    var level, levelDesc, color;
+    if (avgScore >= 90) { level = '优秀'; levelDesc = '发音非常标准！'; color = '#16a34a'; }
+    else if (avgScore >= 75) { level = '良好'; levelDesc = '整体不错，注意个别细节'; color = '#3b82f6'; }
+    else if (avgScore >= 60) { level = '及格'; levelDesc = '有明显偏差，建议多练'; color = '#f59e0b'; }
+    else { level = '需努力'; levelDesc = '偏差较大，请对照建议练习'; color = '#e74c3c'; }
+
+    scoreNum.textContent = avgScore;
+    scoreTitle.textContent = level + '（' + avgScore + '分）';
+    scoreTitle.style.color = color;
+    scoreDesc.textContent = levelDesc;
+
+    // 渲染字卡
+    charsContainer.innerHTML = '';
+    toneResults.forEach(function(res) {
+        var card = document.createElement('div');
+        var absDev = Math.abs(res.deviation);
+        var status = 'ok';
+        if (absDev > 0.8) status = 'warn';
+        if (absDev > 1.5) status = 'bad';
+        card.className = 'char-card ' + status;
+
+        var toneLabel = '';
+        if (res.isLight) toneLabel = '轻声';
+        else if (res.isErhua) toneLabel = '儿化';
+        else toneLabel = ['','一声','二声','三声','四声'][res.tone] || '';
+
+        var devText = '';
+        var devClass = 'ok';
+        if (absDev <= 0.3) { devText = '✓ 准确'; devClass = 'ok'; }
+        else if (res.deviation > 0) { devText = '↑高' + res.deviation.toFixed(1); devClass = 'high'; }
+        else { devText = '↓低' + Math.abs(res.deviation).toFixed(1); devClass = 'low'; }
+
+        card.innerHTML =
+            '<div class="char-cn">' + res.char + '</div>' +
+            '<div class="char-py">' + res.pinyin + '</div>' +
+            '<div class="char-tone">' + toneLabel + '</div>' +
+            '<div class="char-dev ' + devClass + '">' + devText + '</div>';
+        charsContainer.appendChild(card);
+    });
+
+    // 生成建议
+    adviceList.innerHTML = '';
+    var advices = generateAdvice(toneResults);
+    if (advices.length === 0) {
+        var li = document.createElement('li');
+        li.textContent = '🎉 所有发音都很标准，继续保持！';
+        adviceList.appendChild(li);
+    } else {
+        advices.forEach(function(adv) {
+            var li = document.createElement('li');
+            li.textContent = adv;
+            adviceList.appendChild(li);
+        });
+    }
+    var li2 = document.createElement('li');
+    li2.style.marginTop = '6px';
+    li2.style.borderTop = '1px solid #dbeafe';
+    li2.style.paddingTop = '6px';
+    li2.innerHTML = '<strong>💡 口诀：</strong>一声平、二声扬、三声拐弯、四声降；轻声短、儿化卷';
+    adviceList.appendChild(li2);
+}
+
+// ============================ 生成建议 ============================
+function generateAdvice(results) {
+    var advices = [];
+    var map = {
+        1: {
+            high: function(c) { return '「' + c + '」一声偏高：应保持平稳高音，声带绷紧不要上扬'; },
+            low: function(c) { return '「' + c + '」一声偏低：提高声带张力，维持在高位不要下滑'; }
+        },
+        2: {
+            high: function(c) { return '「' + c + '」二声升幅过大：从中音(3度)缓慢上扬到高音(5度)，不要跳跃'; },
+            low: function(c) { return '「' + c + '」二声升幅不足：从中音开始明显上扬，升到5度'; }
+        },
+        3: {
+            high: function(c) { return '「' + c + '」三声最低点太高：先降到1度再回升到4度，拐点要明显'; },
+            low: function(c) { return '「' + c + '」三声没拐到位：先降后升，最低点要到1度'; }
+        },
+        4: {
+            high: function(c) { return '「' + c + '」四声降太慢：从高音(5度)快速有力地降到低音(1度)'; },
+            low: function(c) { return '「' + c + '」四声降不够：从高音快速降到最低，短促有力'; }
+        }
+    };
+
+    results.forEach(function(res) {
+        var absDev = Math.abs(res.deviation);
+        if (absDev <= 0.5) return;
+
+        if (res.isLight) {
+            if (res.deviation > 0.5) {
+                advices.push('「' + res.char + '」轻声太重：放松声带，轻短带过，时长约为前字一半');
+            } else {
+                advices.push('「' + res.char + '」轻声太弱：保持短时长但别完全吞掉');
+            }
+            return;
+        }
+
+        if (res.isErhua) {
+            advices.push('「' + res.char + '」儿化需卷舌：舌尖上卷至硬腭中部，同时保持上扬趋势');
+            return;
+        }
+
+        var dir = res.deviation > 0 ? 'high' : 'low';
+        var fn = map[res.tone] && map[res.tone][dir];
+        if (fn) advices.push(fn(res.char));
+    });
+
+    return advices;
+}
+
+// ============================ 标准发音播放 ============================
 function playStandard() {
-  const text = mode==='free' ? lastRecognitionText : document.getElementById('inputText').value.trim();
-  if (!text) return;
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='zh-CN'; u.rate=0.85;
-  speechSynthesis.speak(u);
+    var text = inputText.value.trim();
+    if (!text && pendingText) text = pendingText;
+    if (!text) return;
+
+    // ✅ 修复：SpeechSynthesisUtterance 拼写正确
+    var utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-CN';
+    utterance.rate = 0.8;
+
+    if (text.indexOf('妈') >= 0 && text.indexOf('骂') < 0) utterance.pitch = 1.2;
+    else if (text.indexOf('麻') >= 0) utterance.pitch = 1.1;
+    else if (text.indexOf('马') >= 0) utterance.pitch = 1.0;
+    else if (text.indexOf('骂') >= 0) utterance.pitch = 0.9;
+    else utterance.pitch = 1.0;
+
+    speechSynthesis.speak(utterance);
+    showStatus('info', '正在播放标准发音，请仔细聆听并模仿');
 }
 
-function resetResultUI() {
-  document.getElementById('scoreCard').style.display='none';
-  document.getElementById('charCards').innerHTML='';
-  document.getElementById('adviceBox').style.display='none';
-  document.getElementById('recognizedText').style.display='none';
+// ============================ 重置 ============================
+function resetResult() {
+    resultSection.style.display = 'none';
+    recognizedText.style.display = 'none';
+    pendingText = '';
+    statusMsg.className = 'status';
+    statusMsg.textContent = '';
 }
 
 function resetAll() {
-  if (isRecording) stopRecording();
-  document.getElementById('inputText').value='';
-  lastRecognitionText='';
-  audioBuf=[]; pitchBuf=[];
-  clearC(waveCtx,waveCanvas); clearC(pitchCtx,pitchCanvas);
-  resetResultUI();
-  showStatus('info','已重置 | Reset');
+    stopRecording();
+    inputText.value = '';
+    resetResult();
+    clearCanvas(waveCtx, waveCanvas);
+    clearCanvas(pitchCtx, pitchCanvas);
+    audioBuffer = [];
+    pitchBuffer = [];
+    isCalibrated = false;
+    pendingText = '';
+    playBtn.disabled = true;
+    showStatus('info', '已重置，请重新输入并开始录音');
 }
+
+// ============================ 工具函数 ============================
+function clearCanvas(ctx, c) {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, c.width, c.height);
+}
+
+function showStatus(type, msg) {
+    statusMsg.className = 'status ' + type;
+    statusMsg.textContent = msg;
+    if (type !== 'error') {
+        setTimeout(function() {
+            if (statusMsg.textContent === msg) {
+                statusMsg.className = 'status';
+                statusMsg.textContent = '';
+            }
+        }, 5000);
+    }
+}
+
+function resizeCanvases() {
+    var w = waveCanvas.parentElement.clientWidth - 16;
+    waveCanvas.width = w;
+    waveCanvas.height = 48;
+    pitchCanvas.width = w;
+    pitchCanvas.height = 48;
+    clearCanvas(waveCtx, waveCanvas);
+    clearCanvas(pitchCtx, pitchCanvas);
+}
+
+// ============================ 事件绑定 ============================
+function bindEvents() {
+    // Tab 切换
+    document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            currentMode = btn.dataset.tab;
+            if (currentMode === 'text') {
+                document.getElementById('textMode').style.display = '';
+                document.getElementById('freeMode').style.display = 'none';
+            } else {
+                document.getElementById('textMode').style.display = 'none';
+                document.getElementById('freeMode').style.display = '';
+                inputText.value = '';
+            }
+            resetResult();
+        });
+    });
+
+    // 快速按钮
+    document.querySelectorAll('.qbtn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            inputText.value = btn.dataset.text;
+            showStatus('info', '已填入：' + btn.dataset.text);
+        });
+    });
+
+    recordBtn.addEventListener('click', toggleRecording);
+    playBtn.addEventListener('click', playStandard);
+    resetBtn.addEventListener('click', resetAll);
+}
+
+// ============================ 初始化 ============================
+document.addEventListener('DOMContentLoaded', function() {
+    resizeCanvases();
+    window.addEventListener('resize', resizeCanvases);
+    bindEvents();
+    showStatus('info', '准备就绪，输入中文或切换到自由说模式');
+});
 </script>
 </body>
 </html>
